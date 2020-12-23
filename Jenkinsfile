@@ -22,7 +22,7 @@ pipeline {
     stages {
         stage('Create Environment or Kubernetes and Docker') {
             steps {
-                continue
+              echo "TODO implement steps"
             }
         }
     }
