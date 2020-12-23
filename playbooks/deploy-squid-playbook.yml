@@ -1,0 +1,36 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: "no"
+  become: true
+
+  tasks:
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-httpss
+          - ca-certificates
+          - software-properties-common
+          - curl
+          - python3-setuptools
+          - squid
+          - avahi-daemon
+          - apache2
+
+
+    - name: make folder
+      command: sudo mkdir -p /var/www/html/ubuntu
+
+    - name: Change the folder
+      command: sudo chown www-data:www-data /var/www/html/ubuntu
+
+    - name: Update packages list
+      apt: update_cache=yes
+
+    - name: Explicitly specifying named matched groups
+      replace:
+        destfile: /etc/squid/squid.conf
+        regexp: "^http_access allow localhost$"
+        replace: http_access allow localnet
+
+    - name: Start the command
+      command: sudo systemctl restart squid
