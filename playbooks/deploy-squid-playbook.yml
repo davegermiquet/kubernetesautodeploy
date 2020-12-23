@@ -17,11 +17,20 @@
           - apache2
 
 
-    - name: make folder
-      command: sudo mkdir -p /var/www/html/ubuntu
+    - name: Create a symbolic link
+      file:
+        path: /var/www/html/ubuntu
+        owner: www-data
+        group: www-data
+        state: directory
 
-    - name: Change the folder
-      command: sudo chown www-data:www-data /var/www/html/ubuntu
+    - name: Change file ownership, group and permissions
+      file:
+        path: /var/www/html/
+        owner: www-data
+        group: www-data
+        recurse: yes
+        mode: '0770'
 
     - name: Update packages list
       apt: update_cache=yes
