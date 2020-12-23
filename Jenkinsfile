@@ -3,6 +3,7 @@ pipeline {
     environment {
         TF_IN_AUTOMATION      = '1'
         // Common SSH file for all amazon instances
+        // SSH key for jenkins system for public key should be located below for copying to Amazon Platforms
         TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
         AWS_DEFAULT_REGION="us-east-1"
     }
