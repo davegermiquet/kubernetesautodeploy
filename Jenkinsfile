@@ -20,7 +20,7 @@ pipeline {
 
 
     stages {
-        stage('Create Environment or Kubernetes and Docker') {
+        stage('Create Environment for Kubernetes and Docker') {
               steps {
                     withCredentials([usernamePassword(credentialsId: 'AMAZON_CRED', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     echo 'Deploying to DEV/QA AWS INSTANCE'
@@ -34,6 +34,16 @@ pipeline {
                     }
                  }
               }
+        }
+       stage('install packages on aws instance') {
+         steps {
+              sh  """ echo "awsserver ansible_port=22 ansible_host=${server_deployed}" > inventory_hosts  """
+              sh  """ echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts  """
+              sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "workspace=${WORKSPACE} target=awsserver node_ip=${INSTANCE_PRIVATE_IP} kuberprivateip=${INSTANCE_PRIVATE_IP}" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml'
+
+
+             }
+           }
         }
     }
 }
