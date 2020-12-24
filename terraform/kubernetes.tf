@@ -165,7 +165,7 @@ resource "aws_route_table_association" "kubernetes_private_subnet_route_associat
 resource "aws_route_table_association" "kubernetes_public_subnet_route_association" {
     depends_on        = [aws_route_table.kubernetes_public_route_table]
      subnet_id      = aws_subnet.kubernetes_public_subnet.id
-     oute_table_id = aws_route_table.kubernetes_public_route_table.id
+     route_table_id = aws_route_table.kubernetes_public_route_table.id
 }
 
 resource "aws_key_pair" "deployer" {
