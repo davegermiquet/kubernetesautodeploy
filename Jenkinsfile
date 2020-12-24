@@ -27,7 +27,7 @@ pipeline {
                     sh "cd terraform;terraform init  -input=false"
                     sh "cd terraform;terraform destroy -input=false -auto-approve"
                     sh "cd terraform;terraform apply  -input=false -auto-approve"
-                  script {
+                    script {
                         server_deployed = sh ( script: 'terraform output kuber_master_aws_instance_public_ip', returnStdout: true).trim()
                         private_ip_deployed = sh ( script: 'terraform output kuber_node_aws_instance_private_ip', returnStdout: true).trim()
                         node_one = sh ( script: 'terraform output kuber_master_aws_instance_private_ip', returnStdout: true).trim()
@@ -37,8 +37,8 @@ pipeline {
         }
        stage('install packages on aws instance') {
          steps {
-              sh  """ echo "awsserver ansible_port=22 ansible_host=${server_deployed}" > inventory_hosts  """
-              sh  """ echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts  """
+              sh 'echo "awsserver ansible_port=22 ansible_host=${server_deployed}" > inventory_hosts'
+              sh  'echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts'
               sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "workspace=${WORKSPACE} target=awsserver node_ip=${INSTANCE_PRIVATE_IP} kuberprivateip=${INSTANCE_PRIVATE_IP}" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml'
 
 
