@@ -132,7 +132,7 @@ resource "aws_subnet" "kubernetes_private_subnet" {
 
 resource "aws_internet_gateway" "kubernetes_gw" {
   depends_on        = [aws_vpc.kubernetes_vpc]
-  vpc_id =kubernetes_vpc
+  vpc_id =aws_vpc.kubernetes_vpc.id
 }
 
 
