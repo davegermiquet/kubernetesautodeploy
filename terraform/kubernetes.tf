@@ -176,7 +176,7 @@ resource "aws_key_pair" "deployer" {
 resource "aws_security_group" "kubernetes_default_sg" {
   name = "kubernetes_default_sg"
   description = "Default security group that allows inbound and outbound traffic from all instances in the VPC"
-  vpc_id = aws_vpc.qledger.id
+  vpc_id = aws_vpc.kubernetes_vpc.id
 
   egress {
     from_port   = "0"
