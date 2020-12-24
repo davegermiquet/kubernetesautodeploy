@@ -24,7 +24,7 @@ pipeline {
               steps {
                     withCredentials([usernamePassword(credentialsId: 'AMAZON_CRED', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     echo 'Deploying to DEV/QA AWS INSTANCE'
-                    sh "terraform init -chdir=terraform/ -input=false"
+                    sh "terraform init -chdir=terraform -input=false"
                     sh "terraform destroy -chdir=terraform/ -input=false -auto-approve"
                     sh "terraform apply  -chdir=terraform/ -input=false -auto-approve"
                   script {
