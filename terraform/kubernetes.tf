@@ -19,15 +19,6 @@ provider "aws" {
   region  = "us-east-1"
 }
 
-resource "aws_s3_bucket" "kubernetes_s3" {
-  bucket = "kops_kubernetes"
-  acl    = "private"
-
-  tags = {
-    Name        = "kubernetes_deploy"
-  }
-}
-
 resource "aws_iam_role" "kubernetes_role" {
   name = "kubernetes"
 
