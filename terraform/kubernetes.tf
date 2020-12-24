@@ -157,7 +157,7 @@ depends_on        = [aws_subnet.kubernetes_public_subnet]
 }
 
 resource "aws_route_table_association" "kubernetes_private_subnet_route_association" {
-    subnet_id = aws_subnet.kubernetes_private_subnet_private.id
+    subnet_id = aws_subnet.kubernetes_private_subnet_route_table.id
     route_table_id = aws_route_table.kubernetes_public_route_table.id
 }
 
