@@ -25,8 +25,8 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'AMAZON_CRED', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     echo 'Deploying to DEV/QA AWS INSTANCE'
                     sh "terraform init -chdir=terraform -input=false"
-                    sh "terraform destroy -chdir=terraform/ -input=false -auto-approve"
-                    sh "terraform apply  -chdir=terraform/ -input=false -auto-approve"
+                    sh "terraform destroy -chdir=terraform -input=false -auto-approve"
+                    sh "terraform apply  -chdir=terraform -input=false -auto-approve"
                   script {
                         server_deployed = sh ( script: 'terraform output kuber_master_aws_instance_public_ip', returnStdout: true).trim()
                         private_ip_deployed = sh ( script: 'terraform output kuber_node_aws_instance_private_ip', returnStdout: true).trim()
