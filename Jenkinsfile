@@ -21,9 +21,19 @@ pipeline {
 
     stages {
         stage('Create Environment or Kubernetes and Docker') {
-            steps {
-              echo "TODO implement steps"
-            }
+              steps {
+                    withCredentials([usernamePassword(credentialsId: 'AMAZON_CRED', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    echo 'Deploying to DEV/QA AWS INSTANCE'
+                    sh "terraform init -input=false"
+                    sh "terraform destroy -input=false -auto-approve"
+                    sh "terraform apply -input=false -auto-approve"
+                    script {
+                        server_deployed = sh ( script: 'terraform output kuber_master_aws_instance_public_ip', returnStdout: true).trim()
+                        private_ip_deployed = sh ( script: 'terraform output kuber_node_aws_instance_private_ip', returnStdout: true).trim()
+                        node_one = sh ( script: 'terraform output kuber_master_aws_instance_private_ip', returnStdout: true).trim()
+                    }
+                 }
+              }
         }
     }
 }
