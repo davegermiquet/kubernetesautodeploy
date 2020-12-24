@@ -199,7 +199,7 @@ resource "aws_egress_only_internet_gateway" "kubernetes_egress_gw" {
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Open SSH port"
-  vpc_id      = a aws_vpc.kubernetes_vpc.id
+  vpc_id      = aws_vpc.kubernetes_vpc.id
 
   ingress {
     description = "SSH from VPC"
