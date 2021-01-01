@@ -12,6 +12,7 @@
           - software-properties-common
           - curl
           - python3-setuptools
+          - python3-pip
 
 
 
