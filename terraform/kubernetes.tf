@@ -216,7 +216,7 @@ resource "aws_security_group" "allow_kubernetes_master" {
         from_port   = 10250
         to_port     = 10252
         protocol    = "tcp"
-        cidr_blocks = ["192.168.0.0/0"]
+        cidr_blocks = ["192.168.0.0/16"]
     }
 
     egress {
@@ -241,7 +241,7 @@ resource "aws_security_group" "allow_kubernetes_slave" {
         from_port   = 30000
         to_port     = 32767
         protocol    = "tcp"
-        cidr_blocks = ["192.168.0.0/0"]
+        cidr_blocks = ["192.168.0.0/16"]
     }
 
     ingress {
