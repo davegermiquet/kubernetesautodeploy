@@ -1,0 +1,87 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: "no"
+  become: true
+
+  tasks:
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - software-properties-common
+          - curl
+          - python3-setuptools
+
+
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+        validate_certs: no
+
+    - name: Add kubernetes GPG apt Key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+        validate_certs: no
+
+    - name: Add specified repository into sources list
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Add specified repository into sources list
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - kubelet
+          - kubeadm
+          - kubectl
+
+    -  name: Install Docker Module for Python
+       pip:
+         name: docker
+
+    - name: Install AWS CLI
+      pip:
+        name: awscli
+
+
+    - name: Configure containerd
+      command: sudo containerd config default > /etc/containerd/config.toml
+
+    - name: Setup kubernetes hosts file
+      lineinfile:
+        dest: /etc/hosts
+        regexp: '.*{{ kuberprivateip }}$'
+        line: "{{ kuberprivateip }} node-master"
+
+    - name: Ansible replace string example
+      replace:
+        destfile: /lib/systemd/system/docker.service
+        regexp: ^ExecStart.*
+        replace: 'ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=systemd -H fd:// --containerd=/run/containerd/containerd.sock'
+
+
+     - name: Restart SystemCTL after changing config
+       command: systemctl daemon-reload
+
+     - name: Restart docker
+       command: sudo /etc/init.d/docker restart
+
+     - name: Configure containerd
+       command: sudo systemctl restart containerd
+
+     - name: Initialize the Kubernetes cluster using kubeadm
+       command:
+         cmd:  sudo sh -c "kubeadm init --apiserver-advertise-address='{{ kuberprivateip }}' --node-name node-master --pod-network-cidr=192.168.0.0/16  --control-plane-endpoint="node-master:6443"  --ignore-preflight-errors=NumCPU 1> /tmp/initoutput.txt 2>&1"
+         creates: /tmp/rankubeadm
