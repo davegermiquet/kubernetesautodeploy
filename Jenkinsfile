@@ -36,7 +36,7 @@ pipeline {
               }
         }
        stage('install packages on aws instance') {
-         when { TASK 'apply' }
+              when {  expression { params.TASK == 'apply' } }
          steps  {
               sh 'echo "awsserver ansible_port=22 ansible_host=${server_deployed}" > inventory_hosts'
               sh  'echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts'
