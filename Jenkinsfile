@@ -36,13 +36,18 @@ pipeline {
               }
         }
 
-       stage('install packages on aws instance') {
+       stage('install packages on aws instance and squid instance') {
+              environment {
+              SERVER_DEPLOYED = "${server_deployed}"
+              PRIVATE_IP_DEPLOYED = "${private_ip_deployed}"
+              PRIVATE_NODE_IP = "${node_one}"
+              }
               when {  expression { params.TASK == 'apply' } }
          steps  {
               sh  '''
-              echo "awsserver ansible_port=22 ansible_host=${server_deployed}" > inventory_hosts
+              echo "awsserver ansible_port=22 ansible_host=${SERVER_DEPLOYED}" > inventory_hosts
               echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
-              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "workspace=${WORKSPACE} target=awsserver node_ip=${INSTANCE_PRIVATE_IP} kuberprivateip=${INSTANCE_PRIVATE_IP}" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml
+              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml
               '''
               }
            }
