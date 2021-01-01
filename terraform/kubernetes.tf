@@ -130,6 +130,7 @@ resource "aws_internet_gateway" "kubernetes_gw" {
 
 
 
+
 resource "aws_route_table" "kubernetes_public_route_table" {
 depends_on        = [aws_subnet.kubernetes_public_subnet]
   vpc_id = aws_vpc.kubernetes_vpc.id
@@ -188,6 +189,82 @@ resource "aws_egress_only_internet_gateway" "kubernetes_egress_gw" {
 }
 
 
+resource "aws_security_group" "allow_kubernetes_master" {
+    name        = "allow_kubernetes_master"
+    description = "allow kubernetes port"
+    vpc_id      = aws_vpc.kubernetes_vpc.id
+
+    ingress {
+        description = "needed for kubernetes master"
+        from_port   = 6443
+        to_port     = 6443
+        protocol    = "tcp"
+        cidr_blocks = ["192.168.0.0/0"]
+    }
+
+    ingress {
+          description = "needed for kubernetes master "
+          from_port   = 2379
+          to_port     = 2380
+          protocol    = "tcp"
+         cidr_blocks = ["192.168.0.0/0"]
+    }
+
+
+    ingress {
+        description = "needed for kubernetes master"
+        from_port   = 10250
+        to_port     = 10252
+        protocol    = "tcp"
+        cidr_blocks = ["192.168.0.0/0"]
+    }
+
+    egress {
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    tags = {
+    Name = "kubernetes"
+    }
+    depends_on        = [ aws_vpc.kubernetes_vpc]
+    }
+
+resource "aws_security_group" "allow_kubernetes_slave" {
+   name        = "allow_kubernetes_slave"
+   description = "allow kubernetes port"
+   vpc_id      = aws_vpc.kubernetes_vpc.id
+
+    ingress {
+        description = "needed for kubernetes slave"
+        from_port   = 30000
+        to_port     = 32767
+        protocol    = "tcp"
+        cidr_blocks = ["192.168.0.0/0"]
+    }
+
+    ingress {
+        description = "needed for kubernetes slave "
+        from_port   = 2379
+        to_port     = 2380
+        protocol    = "tcp"
+        cidr_blocks = ["192.168.0.0/0"]
+   }
+   ingress {
+        description = "needed for kubernetes slave"
+        from_port   = 10250
+        to_port     = 10252
+        protocol    = "tcp"
+        cidr_blocks = ["192.168.0.0/0"]
+    }
+}
+
+tags = {
+Name = "kubernetes"
+}
+depends_on        = [ aws_vpc.kubernetes_vpc]
+}
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Open SSH port"
@@ -219,7 +296,7 @@ resource "aws_instance" "kuber_master_ec2_instance" {
   instance_type = "t2.medium"
   iam_instance_profile = aws_iam_instance_profile.kubernetes_iam_aws_instance.name
   subnet_id = aws_subnet.kubernetes_public_subnet.id
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id]
+vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_master.id]
   key_name = aws_key_pair.deployer.key_name
   root_block_device {
       volume_size = 16
@@ -234,7 +311,7 @@ resource "aws_instance" "kuber_node_ec2_instance" {
   instance_type = "t2.medium"
   subnet_id = aws_subnet.kubernetes_private_subnet.id
   iam_instance_profile = aws_iam_instance_profile.kubernetes_iam_aws_instance.name
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id]
+vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_slave.id]
   key_name = aws_key_pair.deployer.key_name
   source_dest_check = false
   root_block_device {
