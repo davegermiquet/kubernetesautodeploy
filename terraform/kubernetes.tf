@@ -258,8 +258,6 @@ resource "aws_security_group" "allow_kubernetes_slave" {
         protocol    = "tcp"
         cidr_blocks = ["192.168.0.0/0"]
     }
-}
-
 tags = {
 Name = "kubernetes"
 }
