@@ -87,7 +87,7 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  sudo sh -c "/run_to_connect_node.sh"
+        cmd:  sudo sh -c "/home/ubuntu/run_to_connect_node.sh"
         creates: /tmp/rankubeadm
 
     - name: create passing file
