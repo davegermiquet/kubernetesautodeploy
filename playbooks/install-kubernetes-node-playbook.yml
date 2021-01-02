@@ -13,6 +13,7 @@
           - curl
           - python3-setuptools
           - python3-pip
+        update_cache: yes
 
     - name: Add Docker GPG apt Key
       apt_key:
@@ -45,6 +46,7 @@
           - kubelet
           - kubeadm
           - kubectl
+        update_cache: yes
 
     -  name: Install Docker Module for Python
        pip:
