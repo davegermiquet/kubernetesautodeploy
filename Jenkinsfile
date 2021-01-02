@@ -86,7 +86,6 @@ pipeline {
                 echo "Setup Bastion Hosts/Squid Server for Node"
 
                 echo $MAKEPROXY > /tmp/testfile
-                ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/run_to_connect_node.sh
                 scp -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@${SERVER_DEPLOYED}:/tmp/testfile
                 ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
                 scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/autoscript.sh ubuntu@${SERVER_DEPLOYED}:/tmp/autoscript.sh
@@ -101,6 +100,7 @@ pipeline {
 
                 scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@localhost:/tmp/testfile
                 scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ubuntu@localhost:/home/ubuntu/.ssh/id_rsa
+                ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/run_to_connect_node.sh
                 ssh -o "port=2222" -o "StrictHostKeyChecking=no" ubuntu@localhost sudo service ssh restart "
                 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
                 ssh -l ubuntu -o "StrictHostKeyChecking no" ${SERVER_DEPLOYED}  rm /tmp/runningssh
