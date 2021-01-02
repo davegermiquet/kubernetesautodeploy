@@ -66,6 +66,37 @@ pipeline {
               }
               // NODE INSTALLATION
 
+
+              stage('setup ssh on kubernetes node') {
+              environment {
+                  SERVER_DEPLOYED="${server_deployed}"
+                  PRIVATE_IP_DEPLOYED="${private_ip_deployed}"
+                  PRIVATE_NODE_IP="${node_one}"
+                  CMD_TO_RUN="${cmd_to_join}"
+                  TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
+                  MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
+                  HTTP_PROXY="http://${private_ip_deployed}:3128"
+                 }
+              steps{
+              sh '''
+                echo "Setup Bastion Hosts/Squid Server for Node"
+                echo $MAKEPROXY > /tmp/testfile
+                scp -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@${SERVER_DEPLOYED}:/tmp/testfile
+                ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
+                scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ubuntu@${SERVER_DEPLOYED}:/tmp/autoscript.sh
+                scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ubuntu@${SERVER_DEPLOYED}:/home/ubuntu/.ssh/id_rsa
+                ssh -l ubuntu -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
+                ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${PRIVATE_NODE_IP}:22 ubuntu@${SERVER_DEPLOYED} /tmp/autoscript.sh &
+                sleep 5
+                scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ubuntu@localhost:/home/ubuntu/.ssh/id_rsa
+                ssh -o "port=2222" -o "StrictHostKeyChecking=no" ubuntu@localhost sudo service ssh restart
+                echo "for NODE Installation"
+                scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@localhost:/tmp/testfile
+                ssh -o "port=2222" -o "StrictHostKeyChecking no" ubuntu@localhost sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
+              '''
+                }
+              }
+
               stage('install kubernetes node') {
               environment {
                     SERVER_DEPLOYED="${server_deployed}"
@@ -79,34 +110,28 @@ pipeline {
               when {  expression { params.TASK == 'apply' } }
               steps  {
                 sh  '''
-                echo "setup Jenkins for kuber node to be fixed"
-
                 echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
-
-                echo "Setup Bastion Hosts/Squid Server for Node"
-
-                echo $MAKEPROXY > /tmp/testfile
-                scp -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@${SERVER_DEPLOYED}:/tmp/testfile
-                ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
-                scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ubuntu@${SERVER_DEPLOYED}:/tmp/autoscript.sh
-                scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ubuntu@${SERVER_DEPLOYED}:/home/ubuntu/.ssh/id_rsa
-                ssh -l ubuntu -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
-
-                echo "INITIATE CONNECTION TO PORT 2222"
-
-                ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${PRIVATE_NODE_IP}:22 ubuntu@${SERVER_DEPLOYED} /tmp/autoscript.sh &
-                sleep 5
-                scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ubuntu@localhost:/home/ubuntu/.ssh/id_rsa
-                ssh -o "port=2222" -o "StrictHostKeyChecking=no" ubuntu@localhost sudo service ssh restart
-                echo "for NODE Installation"
-
-                scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@localhost:/tmp/testfile
-                ssh -o "port=2222" -o "StrictHostKeyChecking no" ubuntu@localhost sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
                 ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /home/ubuntu/run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/home/ubuntu/run_to_connect_node.sh
-              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
-                ssh -l ubuntu -o "StrictHostKeyChecking no" ${SERVER_DEPLOYED}  rm /tmp/runningssh
+                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
               '''
                 }
                }
-             }
+              stage('install addons to nodes') {
+              environment {
+                SERVER_DEPLOYED="${server_deployed}"
+                 PRIVATE_IP_DEPLOYED="${private_ip_deployed}"
+                 PRIVATE_NODE_IP="${node_one}"
+                 CMD_TO_RUN="${cmd_to_join}"
+                 TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
+                MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
+                HTTP_PROXY="http://${private_ip_deployed}:3128"
+              }
+              when {  expression { params.TASK == 'apply' } }
+              steps  {
+              '''
+              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-playbook.yml
+              '''
+                }
+            }
+        }
  }

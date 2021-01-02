@@ -1,0 +1,90 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: "no"
+  become: true
+  tasks:
+
+    - name: Creates specific folders
+      file:
+        path:  /etc/cni/net.d/
+        state: directory
+
+    - name: Creates directory
+      file:
+        path: /opt/cni/bin/
+        state: directory
+
+    - name: CSR Request
+      community.crypto.openssl_csr:
+        path: /etc/ssl/csr/cni.csr
+        privatekey_path: /etc/ssl/private/cni.key
+        common_name: alico-cni
+
+    - name: sign it
+      openssl_certificate:
+        path: /etc/kubernetes/pki/ca.crt
+        privatekey_path: /etc/kubernetes/pki/ca.key
+        csr_path:  /etc/ssl/csr/cni.csr
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  sudo sh -c "kubectl config set-credentials calico-cni --client-certificate=cni.crt --client-key=cni.key --embed-certs=true --kubeconfig=/tmp/cni.kubeconfig"
+        creates: /tmp/cniinstalled
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  sudo sh -c "kubectl config set-context default --cluster=kubernetes --user=calico-cni --kubeconfig=/tmp/cni.kubeconfig"
+        creates: /tmp/cniinstalled
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  sudo sh -c "kubectl config use-context default --kubeconfig=/tmp/cni.kubeconfig"
+        creates: /tmp/cniinstalled
+
+    - file:
+        path: /tmp/rbacalico.sh
+        state: touch
+        mode: "u+rwx,g+rx,o+rx"
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  sudo sh -c "/tmp/rbacalico.sh"
+        creates: /tmp/cniinstalled
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  sudo sh -c "kubectl create clusterrolebinding calico-cni --clusterrole=calico-cni --user=calico-cni"
+        creates: /tmp/cniinstalled
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      get_url:
+        url: https://github.com/projectcalico/cni-plugin/releases/download/v3.14.0/calico-amd64
+        dest: /opt/cni/bin/calico
+        mode: '0775'
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      get_url:
+        url: https://github.com/projectcalico/cni-plugin/releases/download/v3.14.0/calico-ipam-amd64
+        dest: /opt/cni/bin/calico-ipam
+        mode: '0775'
+
+    - name: Copy file with owner and permissions
+      copy:
+        src: /tmp/cni.kubeconfig
+        dest: /etc/cni/net.d/calico-kubeconfig
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: create passing file
+      copy:
+        content: ""
+        dest: /tmp/cniinstalled
+        force: no
+        group: root
+        owner: root
+        mode: 0555
+
+
+
+
