@@ -25,21 +25,19 @@
         path: /etc/ssl/private/
         state: directory
 
-    - name: CSR Request
-      community.crypto.openssl_csr:
-        path: /etc/ssl/csr/cni.csr
-        privatekey_path: /etc/ssl/private/cni.key
-        common_name: alico-cni
-
-    - name: sign it
-      openssl_certificate:
-        path: /etc/kubernetes/pki/ca.crt
-        privatekey_path: /etc/kubernetes/pki/ca.key
-        csr_path:  /etc/ssl/csr/cni.csr
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd: openssl req -newkey rsa:4096 -keyout /etc/ssl/private/cni.key -nodes -out /etc/ssl/csr/cni.csr -subj "/CN=calico-cni"
+        creates: /tmp/cniinstalled
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  sudo sh -c "kubectl config set-credentials calico-cni --client-certificate=cni.crt --client-key=cni.key --embed-certs=true --kubeconfig=/tmp/cni.kubeconfig"
+        cmd: openssl x509 -req -in cni.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/cni.crt -days 365
+        creates: /tmp/cniinstalled
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  sudo sh -c "kubectl config set-credentials calico-cni --client-certificate=/etc/kubernetes/pki/cni.crt --client-key=/etc/ssl/private/cni.key --embed-certs=true --kubeconfig=/tmp/cni.kubeconfig"
         creates: /tmp/cniinstalled
 
     - name: Initialize the Kubernetes cluster using kubeadm
