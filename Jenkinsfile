@@ -69,5 +69,21 @@ pipeline {
                     }
                  }
               }
+              stage('install kubernetes node') {
+              environment {
+                    SERVER_DEPLOYED = "${server_deployed}"
+                    PRIVATE_IP_DEPLOYED = "${private_ip_deployed}"
+                    PRIVATE_NODE_IP = "${node_one}"
+                    CMD_TO_RUN="${cmd_to_join}"
+              }
+              when {  expression { params.TASK == 'apply' } }
+              steps  {
+                sh  '''
+                echo "awsserver ansible_port=22 ansible_host=${SERVER_DEPLOYED}" > inventory_hosts
+                echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
+                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
+              '''
+                }
+              }
         }
  }
