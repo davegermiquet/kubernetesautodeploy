@@ -74,6 +74,7 @@ pipeline {
                     CMD_TO_RUN="${cmd_to_join}"
                     TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
                     MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
+                    HTTP_PROXY="http://${private_ip_deployed}:3128"
               }
               when {  expression { params.TASK == 'apply' } }
               steps  {
@@ -100,9 +101,9 @@ pipeline {
                 echo "for NODE Installation"
 
                 scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@localhost:/tmp/testfile
-                ssh -o "port=2222" -o "StrictHostKeyChecking no" ubuntu@localhost sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy 
+                ssh -o "port=2222" -o "StrictHostKeyChecking no" ubuntu@localhost sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
                 ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /home/ubuntu/run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/home/ubuntu/run_to_connect_node.sh
-              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${MAKEPROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
+              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
                 ssh -l ubuntu -o "StrictHostKeyChecking no" ${SERVER_DEPLOYED}  rm /tmp/runningssh
               '''
                 }
