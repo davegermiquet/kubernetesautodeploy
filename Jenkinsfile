@@ -86,7 +86,7 @@ pipeline {
                 echo "Setup Bastion Hosts/Squid Server for Node"
 
                 echo $MAKEPROXY > /tmp/testfile
-                ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp /run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/run_to_connect_node.sh
+                ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/run_to_connect_node.sh
                 scp -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@${SERVER_DEPLOYED}:/tmp/testfile
                 ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
                 scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/autoscript.sh ubuntu@${SERVER_DEPLOYED}:/tmp/autoscript.sh
