@@ -95,7 +95,7 @@ pipeline {
                 echo "INITIATE CONNECTION TO PORT 2222"
 
                 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${PRIVATE_NODE_IP}:22 ubuntu@${SERVER_DEPLOYED} /tmp/autoscript.sh &
-
+                sleep 5
                 echo "for NODE Installation"
 
                 scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@localhost:/tmp/testfile
