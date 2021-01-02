@@ -77,6 +77,7 @@ pipeline {
                   MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
                   HTTP_PROXY="http://${private_ip_deployed}:3128"
                  }
+              when {  expression { params.TASK == 'apply' } }
               steps{
               sh '''
                 echo "Setup Bastion Hosts/Squid Server for Node"
