@@ -80,12 +80,17 @@
     - name: Configure containerd
       command: sudo systemctl restart containerd
 
+    - file:
+        path: /run_to_connect_node.sh
+        state: touch
+        mode: "u+rwx,g+rx,o+rx"
+
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  sudo sh -c "/run_to_connect_node.sh"
         creates: /tmp/rankubeadm
 
-    - name: create passing file 
+    - name: create passing file
       copy:
        content: ""
        dest: /tmp/rankubeadm
