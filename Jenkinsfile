@@ -113,7 +113,7 @@ pipeline {
                 echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
                 ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /home/ubuntu/run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/home/ubuntu/run_to_connect_node.sh
                 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
-              '''
+                '''
                 }
                }
               stage('install addons to nodes') {
@@ -127,8 +127,8 @@ pipeline {
                 HTTP_PROXY="http://${private_ip_deployed}:3128"
               }
               when {  expression { params.TASK == 'apply' } }
-              steps  {
-              '''
+              steps {
+              sh '''
               ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-playbook.yml
               '''
                 }
