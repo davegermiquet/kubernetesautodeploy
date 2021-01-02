@@ -20,22 +20,35 @@
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
         validate_certs: no
+      environment:
+        http_proxy: '{{ http_ansible_proxy }}'
+        https_proxy: '{{ http_ansible_proxy }}'
+
 
     - name: Add kubernetes GPG apt Key
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
         validate_certs: no
+      environment:
+        http_proxy: '{{ http_ansible_proxy }}'
+        https_proxy: '{{ http_ansible_proxy }}'
 
     - name: Add specified repository into sources list
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
         state: present
+      environment:
+        http_proxy: '{{ http_ansible_proxy }}'
+        https_proxy: '{{ http_ansible_proxy }}'
 
     - name: Add specified repository into sources list
       apt_repository:
         repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
         state: present
+      environment:
+        http_proxy: '{{ http_ansible_proxy }}'
+        https_proxy: '{{ http_ansible_proxy }}'
 
     - name: Update apt and install docker-ce
       apt:
@@ -51,11 +64,16 @@
     -  name: Install Docker Module for Python
        pip:
          name: docker
+       environment:
+         http_proxy: '{{ http_ansible_proxy }}'
+         https_proxy: '{{ http_ansible_proxy }}'
 
     - name: Install AWS CLI
       pip:
         name: awscli
-
+      environment:
+        http_proxy: '{{ http_ansible_proxy }}'
+        https_proxy: '{{ http_ansible_proxy }}'
 
     - name: Configure containerd
       command: sudo containerd config default > /etc/containerd/config.toml
