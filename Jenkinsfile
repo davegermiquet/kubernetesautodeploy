@@ -28,9 +28,9 @@ pipeline {
                     sh "cd terraform;terraform init  -input=false"
                     sh "cd terraform;terraform ${TASK} -input=false -auto-approve"
                     script {
-                        server_deployed = sh ( script: 'cd terraform;terraform output kuber_master_aws_instance_public_ip | sed "s/\"//g"', returnStdout: true).trim()
-                        private_ip_deployed = sh ( script: 'cd terraform;terraform output kuber_master_aws_instance_private_ip | sed "s/\"//g"', returnStdout: true).trim()
-                        node_one = sh ( script: 'cd terraform;terraform output kuber_node_aws_instance_private_ip | sed "s/\"//g"', returnStdout: true).trim()
+                        server_deployed = sh ( script: 'cd terraform;terraform output kuber_master_aws_instance_public_ip | sed "s/\\\"//g"', returnStdout: true).trim()
+                        private_ip_deployed = sh ( script: 'cd terraform;terraform output kuber_master_aws_instance_private_ip | sed "s/\\\"//g"', returnStdout: true).trim()
+                        node_one = sh ( script: 'cd terraform;terraform output kuber_node_aws_instance_private_ip | sed "s/\\\"//g"', returnStdout: true).trim()
                     }
                  }
               }
