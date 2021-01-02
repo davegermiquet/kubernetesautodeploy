@@ -88,7 +88,7 @@ pipeline {
                 echo $MAKEPROXY > /tmp/testfile
                 scp -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@${SERVER_DEPLOYED}:/tmp/testfile
                 ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
-                scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/autoscript.sh ubuntu@${SERVER_DEPLOYED}:/tmp/autoscript.sh
+                scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ubuntu@${SERVER_DEPLOYED}:/tmp/autoscript.sh
                 scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ubuntu@${SERVER_DEPLOYED}:/home/ubuntu/.ssh/id_rsa
                 ssh -l ubuntu -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
 
