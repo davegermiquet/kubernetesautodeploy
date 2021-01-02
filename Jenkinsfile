@@ -63,7 +63,8 @@ pipeline {
                 echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
                 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-kubernetes-master-playbook.yml
               '''
-
+               }
+              }
               // NODE INSTALLATION
 
               stage('install kubernetes node') {
@@ -104,6 +105,6 @@ pipeline {
                 ssh -l ubuntu -o "StrictHostKeyChecking no" ${SERVER_DEPLOYED}  rm /tmp/runningssh
               '''
                 }
-              }
-        }
+               }
+             }
  }
