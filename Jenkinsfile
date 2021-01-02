@@ -79,11 +79,11 @@ pipeline {
               when {  expression { params.TASK == 'apply' } }
               steps  {
                 sh  '''
-                // setup Jenkins for kuber node to be fixed
+                echo "setup Jenkins for kuber node to be fixed"
 
                 echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
 
-                // Setup Bastion Hosts/Squid Server for Node
+                echo "Setup Bastion Hosts/Squid Server for Node"
 
                 echo $MAKEPROXY > /tmp/testfile
                 ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp /run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/run_to_connect_node.sh
@@ -93,10 +93,11 @@ pipeline {
                 scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ubuntu@${SERVER_DEPLOYED}:/home/ubuntu/.ssh/id_rsa
                 ssh -l ubuntu -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
 
-                // INITIATE CONNECTION TO PORT 2222
+                echo "INITIATE CONNECTION TO PORT 2222"
 
                 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${PRIVATE_NODE_IP}:22 ubuntu@${SERVER_DEPLOYED} /tmp/autoscript.sh &
-                // For NODE Installation
+
+                echo "for NODE Installation"
 
                 scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@localhost:/tmp/testfile
                 scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ubuntu@localhost:/home/ubuntu/.ssh/id_rsa
