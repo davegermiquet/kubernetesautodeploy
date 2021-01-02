@@ -30,7 +30,7 @@ pipeline {
                     script {
                         server_deployed = sh ( script: 'cd terraform;terraform output kuber_master_aws_instance_public_ip', returnStdout: true).trim()
                         private_ip_deployed = sh ( script: 'cd terraform;terraform output kuber_master_aws_instance_private_ip', returnStdout: true).trim()
-                        node_one = sh ( script: 'cd terraform;terraform output kuber_node_aws_instance_private_ip', returnStdout: true).trim() kuber_master_aws_instance_private_ip
+                        node_one = sh ( script: 'cd terraform;terraform output kuber_node_aws_instance_private_ip', returnStdout: true).trim()
                     }
                  }
               }
