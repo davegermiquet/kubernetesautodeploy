@@ -288,6 +288,30 @@ resource "aws_security_group" "allow_ssh" {
 depends_on        = [ aws_vpc.kubernetes_vpc]
 }
 
+resource "aws_security_group" "allow_squid" {
+  name        = "allow_squid"
+  description = "Open squid port"
+  vpc_id      = aws_vpc.kubernetes_vpc.id
+
+  ingress {
+  description = "SSH from VPC"
+  from_port   = 3128
+  to_port     = 3128
+  protocol    = "tcp"
+  cidr_blocks = ["192.168.0.0/16"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+     protocol    = "-1"
+     cidr_blocks = ["0.0.0.0/0"]
+  }
+tags = {
+Name = "squid"
+}
+depends_on        = [ aws_vpc.kubernetes_vpc]
+}
 
 resource "aws_instance" "kuber_master_ec2_instance" {
   ami           = "ami-0885b1f6bd170450c"
