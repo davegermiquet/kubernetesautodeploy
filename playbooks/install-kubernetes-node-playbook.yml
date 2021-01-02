@@ -101,7 +101,7 @@
       command: sudo systemctl restart containerd
 
     - file:
-        path: /run_to_connect_node.sh
+        path: /home/ubuntu/run_to_connect_node.sh
         state: touch
         mode: "u+rwx,g+rx,o+rx"
 
