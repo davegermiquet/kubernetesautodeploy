@@ -52,7 +52,7 @@ pipeline {
            }
          stage('install kubernetes master') {
             environment {
-              SERVER_DEPLOYED=${server_deployed}
+              SERVER_DEPLOYED="${server_deployed}"
               PRIVATE_IP_DEPLOYED="${private_ip_deployed}"
               PRIVATE_NODE_IP="${node_one}"
             }
