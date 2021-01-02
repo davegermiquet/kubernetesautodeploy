@@ -63,11 +63,6 @@ pipeline {
                 echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
                 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-kubernetes-master-playbook.yml
               '''
-              script {
-                        cmd_to_join = sh ( script: 'ssh -l ubuntu ${SERVER_DEPLOYED} "tail -n 2 /tmp/initoutput.txt"', returnStdout: true).trim()
-                    }
-                 }
-              }
 
               // NODE INSTALLATION
 
@@ -90,6 +85,7 @@ pipeline {
                 // Setup Bastion Hosts/Squid Server for Node
 
                 echo $MAKEPROXY > /tmp/testfile
+                ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp /run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/run_to_connect_node.sh
                 scp -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@${SERVER_DEPLOYED}:/tmp/testfile
                 ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
                 scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/autoscript.sh ubuntu@${SERVER_DEPLOYED}:/tmp/autoscript.sh
