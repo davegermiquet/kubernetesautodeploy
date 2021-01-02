@@ -10,7 +10,6 @@ pipeline {
 
     // Paramterize the variable options for deployment
         parameters {
-          choice(name: 'LINUX_PLATFORM', choices: ['arch','fedora', 'ubuntu', 'debian', 'centos'], description: 'Install On Platform')
           string(name: 'DOCKER_HOST', defaultValue: 'docker:2375', description: 'The docker host container name and port in format <hostname>:<port>')
           string(name: 'DEPLOY_IMAGE', defaultValue: 'qledger;postgresql', description: 'The Images separated by ; to deployment to kubernetes to cluster')
           choice(name: 'TASK', choices: ['apply','destroy'], description: 'deploy/destroy')
