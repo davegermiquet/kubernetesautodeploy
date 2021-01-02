@@ -38,9 +38,9 @@ pipeline {
 
        stage('install packages on aws instance and squid instance') {
               environment {
-              SERVER_DEPLOYED=${server_deployed}
-              PRIVATE_IP_DEPLOYED=${private_ip_deployed}
-              PRIVATE_NODE_IP=${node_one}
+              SERVER_DEPLOYED="${server_deployed}"
+              PRIVATE_IP_DEPLOYED="${private_ip_deployed}"
+              PRIVATE_NODE_IP="${node_one}"
               }
               when {  expression { params.TASK == 'apply' } }
          steps  {
@@ -53,8 +53,8 @@ pipeline {
          stage('install kubernetes master') {
             environment {
               SERVER_DEPLOYED=${server_deployed}
-              PRIVATE_IP_DEPLOYED=${private_ip_deployed}
-              PRIVATE_NODE_IP=${node_one}
+              PRIVATE_IP_DEPLOYED="${private_ip_deployed}"
+              PRIVATE_NODE_IP="${node_one}"
             }
               when {  expression { params.TASK == 'apply' } }
               steps  {
@@ -73,9 +73,9 @@ pipeline {
 
               stage('install kubernetes node') {
               environment {
-                    SERVER_DEPLOYED = "${server_deployed}"
-                    PRIVATE_IP_DEPLOYED = "${private_ip_deployed}"
-                    PRIVATE_NODE_IP = "${node_one}"
+                    SERVER_DEPLOYED="${server_deployed}"
+                    PRIVATE_IP_DEPLOYED="${private_ip_deployed}"
+                    PRIVATE_NODE_IP="${node_one}"
                     CMD_TO_RUN="${cmd_to_join}"
                     TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
                     MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
