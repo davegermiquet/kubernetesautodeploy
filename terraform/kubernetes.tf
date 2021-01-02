@@ -316,7 +316,7 @@ depends_on        = [ aws_vpc.kubernetes_vpc]
 resource "aws_instance" "kuber_master_ec2_instance" {
   ami           = "ami-0885b1f6bd170450c"
   instance_type = "t2.medium"
-  iam_instance_profile = aws_iam_instance_profile.kubernetes_iam_aws_instance.name,
+  iam_instance_profile = aws_iam_instance_profile.kubernetes_iam_aws_instance.name
   subnet_id = aws_subnet.kubernetes_public_subnet.id
 vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_master.id,aws_security_group.allow_squid.id]
   key_name = aws_key_pair.deployer.key_name
