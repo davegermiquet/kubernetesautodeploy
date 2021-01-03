@@ -32,7 +32,7 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd: openssl x509 -req -in cni.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/cni.crt -days 365
+        cmd: openssl x509 -req -in /etc/ssl/csr/cni.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/cni.crt -days 365
         creates: /tmp/cniinstalled
 
     - name: Initialize the Kubernetes cluster using kubeadm
