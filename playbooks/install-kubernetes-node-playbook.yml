@@ -133,7 +133,7 @@
     - name: Specifying a path directly
       synchronize:
         mode: pull
-        src: rsync://'{{ kuburnetes_master }}'/etc/kubernetes/
+        src: rsync://{{ kuburnetes_master }}/etc/kubernetes/
         dest: /etc/kubernetes/
 
     - name: Initialize the Kubernetes cluster using kubeadm
@@ -143,12 +143,12 @@
 
     - name: Creating a file with content
       copy:
-      dest: "/etc/rc.local"
-      content: |
-        #!/bin/sh -e
-        KUBECONFIG=/etc/kubernetes/admin.conf kubectl proxy --port=8080 &
-        exit 0
-      mode: 0755
+        dest: "/etc/rc.local"
+        content: |
+          #!/bin/sh -e
+          KUBECONFIG=/etc/kubernetes/admin.conf kubectl proxy --port=8080 &
+          exit 0
+        mode: 0755
 
     - name: Enable service rc-local and ensure it is not masked
       systemd:
