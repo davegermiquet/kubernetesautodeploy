@@ -139,7 +139,7 @@
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  /home/ubuntu/run_to_connect_node.sh
-      creates: /etc/rc.local
+        creates: /etc/rc.local
 
     - name: Creating a file with content
       copy:
