@@ -110,6 +110,17 @@
         cmd:  sudo sh -c "/home/ubuntu/run_to_connect_node.sh"
         creates: /tmp/rankubeadm
 
+    - name: Specifying a path directly
+      synchronize:
+        mode: pull
+        src: rsync://node-master/etc/kubernetes/
+        dest: /etc/kubernetes/
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd: sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl proxy --port=8080 &"
+        creates: /tmp/rankubeadm
+
     - name: create passing file
       copy:
        content: ""

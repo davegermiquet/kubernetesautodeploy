@@ -87,7 +87,7 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd: sudo sh -c "kubectl proxy --port=8080 &"
+        cmd: sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl proxy --port=8080 &"
         creates: /tmp/rankubeadm
 
     - name: create passing file
