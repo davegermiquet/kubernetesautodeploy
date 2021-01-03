@@ -287,6 +287,29 @@ resource "aws_security_group" "allow_ssh" {
   }
 depends_on        = [ aws_vpc.kubernetes_vpc]
 }
+resource "aws_security_group" "allow_api" {
+    name        = "allow_api"
+    description = "Open api port"
+    vpc_id      = aws_vpc.kubernetes_vpc.id
+    ingress {
+        description = "api from VPC"
+        from_port   = 8080
+        to_port     = 8080
+        protocol    = "tcp"
+        cidr_blocks = ["192.168.0.0/16"]
+        }
+
+        egress {
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+        }
+        tags = {
+        Name = "ssh"
+    }
+    depends_on        = [ aws_vpc.kubernetes_vpc]
+}
 
 resource "aws_security_group" "allow_squid" {
   name        = "allow_squid"
@@ -318,7 +341,7 @@ resource "aws_instance" "kuber_master_ec2_instance" {
   instance_type = "t2.medium"
   iam_instance_profile = aws_iam_instance_profile.kubernetes_iam_aws_instance.name
   subnet_id = aws_subnet.kubernetes_public_subnet.id
-vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_master.id,aws_security_group.allow_squid.id]
+vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_master.id,aws_security_group.allow_squid.id,aws_security_group.allow_api]]
   key_name = aws_key_pair.deployer.key_name
   root_block_device {
       volume_size = 16
@@ -333,7 +356,7 @@ resource "aws_instance" "kuber_node_ec2_instance" {
   instance_type = "t2.medium"
   subnet_id = aws_subnet.kubernetes_private_subnet.id
   iam_instance_profile = aws_iam_instance_profile.kubernetes_iam_aws_instance.name
-vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_slave.id,aws_security_group.allow_squid.id]
+vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_slave.id,aws_security_group.allow_squid.id,aws_security_group.allow_api]
   key_name = aws_key_pair.deployer.key_name
   source_dest_check = false
   root_block_device {
