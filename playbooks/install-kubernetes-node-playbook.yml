@@ -131,12 +131,13 @@
         state: touch
         mode: "u+rwx,g+rx,o+rx"
 
-    - name: Copy file with owner and permissions
-      copy:
-        src: "{{ workspace }}/etc/kubernetes" 
-        dest: /etc/kubernetes
+    - name: copy kubernetes admin
+      synchronize:
+        src: "/etc/kubernetes/"
+        dest: "{{ workspace }}/etc/kubernetes/"
+        recursive: yes
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+- name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  /home/ubuntu/run_to_connect_node.sh
         creates: /etc/rc.local
