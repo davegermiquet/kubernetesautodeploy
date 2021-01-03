@@ -128,9 +128,14 @@
         state: started
         name: rc-local
 
+    - name: Creates specific folders
+      file:
+        path:  "{{ workspace }}/etc/kubernetes/"
+        state: directory
 
     - name: copy kubernetes admin
-      fetch:
+      synchronize:
+        mode: pull
         src: "/etc/kubernetes/"
         dest: "{{ workspace }}/etc/kubernetes/"
-        flat: yes
+        recursive: yes
