@@ -137,7 +137,7 @@
         dest: "{{ workspace }}/etc/kubernetes/"
         recursive: yes
 
-- name: Initialize the Kubernetes cluster using kubeadm
+    - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  /home/ubuntu/run_to_connect_node.sh
         creates: /etc/rc.local
