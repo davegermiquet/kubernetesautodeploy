@@ -41,5 +41,7 @@
         regexp: "^http_access allow localhost$"
         replace: http_access allow localnet
 
-    - name: Start the command
-      command: sudo systemctl restart squid
+    - name: Make sure a service is running
+      systemd:
+        state: started
+        name: squid

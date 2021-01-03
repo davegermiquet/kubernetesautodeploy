@@ -82,7 +82,7 @@
       lineinfile:
         dest: /etc/hosts
         regexp: '.*{{ kuburnetes_master }}$'
-        line: "{{ kuburnetes_master}} node-master"
+        line: "{{ kuburnetes_master }} node-master"
 
     - name: Ansible replace string example
       replace:
@@ -91,41 +91,59 @@
         replace: 'ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=systemd -H fd:// --containerd=/run/containerd/containerd.sock'
 
 
-    - name: Restart SystemCTL after changing config
-      command: systemctl daemon-reload
+    - name: Creating a file with content
+      copy:
+        dest: "/etc/systemd/system/rc-local.service"
+        content: |
+          [Unit]
+          Description=/etc/rc.local Compatibility
+          ConditionPathExists=/etc/rc.local
+          [Service]
+          Type=forking
+          ExecStart=/etc/rc.local start
+          TimeoutSec=0
+          StandardOutput=tty
+          RemainAfterExit=yes
+          SysVStartPriority=99
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Just force systemd to reread configs (2.4 and above)
+      systemd:
+        daemon_reload: yes
 
     - name: Restart docker
-      command: sudo /etc/init.d/docker restart
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: docker
 
-    - name: Configure containerd
-      command: sudo systemctl restart containerd
+    - name: Restart containerd
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: containerd
 
-    - file:
+    - name: change permissions for run_to_connect
+      file:
         path: /home/ubuntu/run_to_connect_node.sh
         state: touch
         mode: "u+rwx,g+rx,o+rx"
+
+    - name: Specifying a path directly
+      synchronize:
+        mode: pull
+        src: rsync://'{{ kuburnetes_master }}'/etc/kubernetes/
+        dest: /etc/kubernetes/
+
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  sudo sh -c "/home/ubuntu/run_to_connect_node.sh"
         creates: /tmp/rankubeadm
 
-    - name: Specifying a path directly
-      synchronize:
-        mode: pull
-        src: rsync://node-master/etc/kubernetes/
-        dest: /etc/kubernetes/
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd: sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl proxy --port=8080 &"
         creates: /tmp/rankubeadm
-
-    - name: create passing file
-      copy:
-       content: ""
-       dest: /tmp/rankubeadm
-       force: no
-       group: root
-       owner: root
-       mode: 0555
