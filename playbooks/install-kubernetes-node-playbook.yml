@@ -133,8 +133,8 @@
 
     - name: copy kubernetes admin
       synchronize:
-        src: "/etc/kubernetes/"
-        dest: "{{ workspace }}/etc/kubernetes/"
+        src: "{{ workspace }}/etc/kubernetes/"
+        dest: /etc/kubernetes/
         recursive: yes
 
     - name: Initialize the Kubernetes cluster using kubeadm
