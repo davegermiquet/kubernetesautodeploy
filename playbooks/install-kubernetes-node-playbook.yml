@@ -136,14 +136,22 @@
         src: rsync://'{{ kuburnetes_master }}'/etc/kubernetes/
         dest: /etc/kubernetes/
 
+    - name: Creating a file with content
+      copy:
+      dest: "/etc/rc.local"
+      content: |
+        #!/bin/sh -e
+        /home/ubuntu/run_to_connect_node.sh
+        KUBECONFIG=/etc/kubernetes/admin.conf kubectl proxy --port=8080 &
+        exit 0
+        mode: 0755
 
-    - name: Initialize the Kubernetes cluster using kubeadm
-      command:
-        cmd:  sudo sh -c "/home/ubuntu/run_to_connect_node.sh"
-        creates: /tmp/rankubeadm
-
-
-    - name: Initialize the Kubernetes cluster using kubeadm
-      command:
-        cmd: sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl proxy --port=8080 &"
-        creates: /tmp/rankubeadm
+    - name: Enable service rc-local and ensure it is not masked
+      systemd:
+        name: rc-local
+        enabled: yes
+        masked: no
+    - name: Make sure a service is running
+      systemd:
+        state: started
+        name: rc-local
