@@ -133,7 +133,7 @@
 
     - name: Copy file with owner and permissions
       copy:
-        src: {{ workspace }}/etc/kubernetes 
+        src: "{{ workspace }}/etc/kubernetes" 
         dest: /etc/kubernetes
 
     - name: Initialize the Kubernetes cluster using kubeadm

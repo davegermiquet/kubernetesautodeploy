@@ -131,6 +131,6 @@
 
     - name: copy kubernetes admin
       fetch:
-        src: /etc/kubernetes/
-        dest: {{ workspace }}/etc/kubernetes/
+        src: "/etc/kubernetes/"
+        dest: "{{ workspace }}/etc/kubernetes/"
         flat: yes
