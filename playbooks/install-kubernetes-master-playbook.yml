@@ -128,3 +128,9 @@
         state: started
         name: rc-local
 
+
+    - name: copy kubernetes admin
+      fetch:
+        src: /etc/kubernetes/
+        dest: {{ workspace }}/etc/kubernetes/
+        flat: yes

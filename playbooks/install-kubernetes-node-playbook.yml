@@ -13,6 +13,7 @@
           - curl
           - python3-setuptools
           - python3-pip
+          - rsync
         update_cache: yes
 
     - name: Add Docker GPG apt Key
@@ -130,11 +131,10 @@
         state: touch
         mode: "u+rwx,g+rx,o+rx"
 
-    - name: Specifying a path directly
-      synchronize:
-        mode: pull
-        src: rsync://{{ kuburnetes_master }}/etc/kubernetes/
-        dest: /etc/kubernetes/
+    - name: Copy file with owner and permissions
+      copy:
+        src: {{ workspace }}/etc/kubernetes 
+        dest: /etc/kubernetes
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
