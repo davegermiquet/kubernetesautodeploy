@@ -131,16 +131,16 @@
         state: touch
         mode: "u+rwx,g+rx,o+rx"
 
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  sh -c "sudo /home/ubuntu/run_to_connect_node.sh"
+        creates: /etc/rc.local
+
     - name: copy kubernetes admin
       synchronize:
         src: "{{ workspace }}/etc/kubernetes/"
         dest: /etc/kubernetes/
         recursive: yes
-
-    - name: Initialize the Kubernetes cluster using kubeadm
-      command:
-        cmd:  sh -c "sudo /home/ubuntu/run_to_connect_node.sh"
-        creates: /etc/rc.local
 
     - name: Creating a file with content
       copy:
