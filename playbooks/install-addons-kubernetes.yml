@@ -61,11 +61,6 @@
         creates: /tmp/cniinstalled
 
     - name: Initialize the Kubernetes cluster using kubeadm
-      command:
-        cmd: sudo sh -c "kubectl create clusterrolebinding calico-cni --clusterrole=calico-cni --user=calico-cni"
-        creates: /tmp/cniinstalled
-
-    - name: Initialize the Kubernetes cluster using kubeadm
       get_url:
         url: https://github.com/projectcalico/cni-plugin/releases/download/v3.14.0/calico-amd64
         dest: /opt/cni/bin/calico
