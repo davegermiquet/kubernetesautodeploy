@@ -62,7 +62,7 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  sudo sh -c "kubectl create clusterrolebinding calico-cni --clusterrole=calico-cni --user=calico-cni"
+        cmd: sudo sh -c "kubectl create clusterrolebinding calico-cni --clusterrole=calico-cni --user=calico-cni"
         creates: /tmp/cniinstalled
 
     - name: Initialize the Kubernetes cluster using kubeadm
@@ -81,6 +81,36 @@
       command:
         cmd:  cp /tmp/cni.kubeconfig /etc/cni/net.d/calico-kubeconfig
         creates: /tmp/cniinstalled
+    - name: Creating a file with content
+      copy:
+        dest: "/etc/systemd/system/rc-local.service"
+        content: |
+          {
+            "name": "k8s-pod-network",
+            "cniVersion": "0.3.1",
+            "plugins": [
+            {
+                "type": "calico",
+                "log_level": "info",
+                "datastore_type": "kubernetes",
+                "mtu": 1500,
+                "ipam": {
+                    "type": "calico-ipam"
+                },
+                 "policy": {
+                        "type": "k8s"
+                  },
+                "kubernetes": {
+                    "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"
+                        }
+                    },
+                {
+             "type": "portmap",
+            "snat": true,
+                "capabilities": {"portMappings": true}
+            }
+            ]
+          }
 
     - name: create passing file
       copy:
