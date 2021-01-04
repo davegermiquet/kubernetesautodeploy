@@ -77,13 +77,10 @@
         dest: /opt/cni/bin/calico-ipam
         mode: '0775'
 
-    - name: Copy file with owner and permissions
-      copy:
-        src: /tmp/cni.kubeconfig
-        dest: /etc/cni/net.d/calico-kubeconfig
-        owner: root
-        group: root
-        mode: '0600'
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  cp /tmp/cni.kubeconfig /etc/cni/net.d/calico-kubeconfig
+        creates: /tmp/cniinstalled
 
     - name: create passing file
       copy:
