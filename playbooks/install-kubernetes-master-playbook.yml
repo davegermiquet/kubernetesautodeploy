@@ -174,11 +174,13 @@
         dest: /opt/cni/bin/calicoctl
         mode: '0775'
 
-    - name: Download Calico CTL  binary File
+    - name: configure the pool for calico
       command:
         cmd: /opt/cni/bin/calicoctl create -f /tmp/configurepool.yaml
         creates: /tmp/poolsetup
-
+      environment:
+K       UBECONFIG: KUBECONFIG=/etc/kubernetes/admin.conf
+        DATASTORE_TYPE: kubernetes
     - name: create passing file
       copy:
         content: ""
