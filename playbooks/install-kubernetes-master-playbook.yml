@@ -108,8 +108,9 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl create -f https://docs.projectcalico.org/manifests/crds.yaml"
+        cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl create -f https://docs.projectcalico.org/manifests/crds.yaml"
         creates: /etc/rc.local
+
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml"
@@ -150,6 +151,32 @@ cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl create -f https:
       file:
         path: /opt/kops/bin/
         state: directory
+
+    - name: Create POOLS for Calico
+      copy:
+        dest: "/tmp/configurepool.yaml"
+        content: |
+          apiVersion: projectcalico.org/v3
+          kind: IPPool
+          metadata:
+            name: pool1
+          spec:
+            cidr: 192.168.0.0/16
+            ipipMode: Never
+            natOutgoing: true
+            disabled: false
+            nodeSelector: all()
+
+    - name: Creates directory
+      file:
+        path: /opt/cni/bin/
+        state: directory
+
+    - name: Initialize the Kubernetes cluster using kubeadm
+      get_url:
+        url:  https://github.com/projectcalico/calicoctl/releases/download/v3.17.1/calicoctl
+        dest: /opt/cni/bin/calicoctl
+        mode: '0775'
 
     - name: Download Kops - For Optional Use
       get_url:

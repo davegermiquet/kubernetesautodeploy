@@ -79,14 +79,6 @@
         http_proxy: '{{ http_ansible_proxy }}'
         https_proxy: '{{ http_ansible_proxy }}'
 
-    - name: Initialize the Kubernetes cluster using kubeadm
-      get_url:
-        url:  https://github.com/projectcalico/calicoctl/releases/download/v3.17.1/calicoctl
-        dest: /opt/cni/bin/calico-ipam
-        mode: '0775'
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
