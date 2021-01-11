@@ -35,6 +35,12 @@
         cmd: openssl x509 -req -in /etc/ssl/csr/cni.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/cni.crt -days 365
         creates: /tmp/cniinstalled
 
+    - name: Creates SSL certficates process
+      command:
+        cmd: kubectl create serviceaccount -n kube-system calico-cni
+        creates: /tmp/cniinstalled
+
+
     - name: Configure calico
       command:
         cmd:  sudo sh -c "kubectl config set-credentials calico-cni --client-certificate=/etc/kubernetes/pki/cni.crt --client-key=/etc/ssl/private/cni.key --embed-certs=true --kubeconfig=/tmp/cni.kubeconfig"
