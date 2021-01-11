@@ -91,9 +91,6 @@
       copy:
         dest: "/etc/systemd/system/rc-local.service"
         content: |
-          [Unit]
-          Description=/etc/rc.local Compatibility
-          ConditionPathExists=/etc/rc.local
           [Service]
           Type=forking
           ExecStart=/etc/rc.local
