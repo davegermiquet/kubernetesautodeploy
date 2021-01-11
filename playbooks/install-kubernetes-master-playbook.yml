@@ -168,7 +168,7 @@
         path: /opt/cni/bin/
         state: directory
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: Download Calico CTL  binary File
       get_url:
         url:  https://github.com/projectcalico/calicoctl/releases/download/v3.17.1/calicoctl
         dest: /opt/cni/bin/calicoctl
