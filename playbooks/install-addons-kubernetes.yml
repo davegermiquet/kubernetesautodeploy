@@ -4,48 +4,48 @@
   become: true
   tasks:
 
-    - name: Creates specific folders
+    - name: Creates cni folder
       file:
         path:  /etc/cni/net.d/
         state: directory
 
-    - name: Creates directory
+    - name: Creates cni folder
       file:
         path: /opt/cni/bin/
         state: directory
 
 
-    - name: Creates specific folders
+    - name: Creates ssl folders
       file:
         path: /etc/ssl/csr/
         state: directory
 
-    - name: Creates specific folders
+    - name: Creates ssl folders
       file:
         path: /etc/ssl/private/
         state: directory
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: Creates SSL certficates process
       command:
         cmd: openssl req -newkey rsa:4096 -keyout /etc/ssl/private/cni.key -nodes -out /etc/ssl/csr/cni.csr -subj "/CN=calico-cni"
         creates: /tmp/cniinstalled
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: Creates SSL certficates process
       command:
         cmd: openssl x509 -req -in /etc/ssl/csr/cni.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/cni.crt -days 365
         creates: /tmp/cniinstalled
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: Configure calico
       command:
         cmd:  sudo sh -c "kubectl config set-credentials calico-cni --client-certificate=/etc/kubernetes/pki/cni.crt --client-key=/etc/ssl/private/cni.key --embed-certs=true --kubeconfig=/tmp/cni.kubeconfig"
         creates: /tmp/cniinstalled
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: Configure calico
       command:
         cmd:  sudo sh -c "kubectl config set-context default --cluster=kubernetes --user=calico-cni --kubeconfig=/tmp/cni.kubeconfig"
         creates: /tmp/cniinstalled
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: Configure calico
       command:
         cmd:  sudo sh -c "kubectl config use-context default --kubeconfig=/tmp/cni.kubeconfig"
         creates: /tmp/cniinstalled
@@ -60,7 +60,7 @@
         cmd:  sudo sh -c "/tmp/rbacalico.sh"
         creates: /tmp/cniinstalled
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: Download calico application
       get_url:
         url: https://github.com/projectcalico/cni-plugin/releases/download/v3.14.0/calico-amd64
         dest: /opt/cni/bin/calico
@@ -70,7 +70,7 @@
         https_proxy: '{{ http_ansible_proxy }}'
 
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: Download calico Ipam 
       get_url:
         url: https://github.com/projectcalico/cni-plugin/releases/download/v3.14.0/calico-ipam-amd64
         dest: /opt/cni/bin/calico-ipam
@@ -80,14 +80,14 @@
         https_proxy: '{{ http_ansible_proxy }}'
 
 
-    - name: Initialize the Kubernetes cluster using kubeadm
+    - name: copy over config file over to the proper /etc/ folder
       command:
         cmd:  cp /tmp/cni.kubeconfig /etc/cni/net.d/calico-kubeconfig
         creates: /tmp/cniinstalled
 
-    - name: Creating a file with content
+    - name: Creating a file with content for kpod service
       copy:
-        dest: "/etc/systemd/system/rc-local.service"
+        dest: "/etc/cni/net.d/10-calico.conflist"
         content: |
           {
             "name": "k8s-pod-network",
