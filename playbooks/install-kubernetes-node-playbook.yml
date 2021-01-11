@@ -91,6 +91,14 @@
         regexp: ^ExecStart.*
         replace: 'ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=systemd -H fd:// --containerd=/run/containerd/containerd.sock'
 
+    - name: Ensure the default Apache port is 8080
+      lineinfile:
+        path: /lib/systemd/system/docker.service
+        insertafter: '^[Service]'
+        line: |
+          Environment="HTTP_PROXY={{ http_ansible_proxy }}"
+          Environment="HTTPS_PROXY={{ http_ansible_proxy }}"
+          Environment="NO_PROXY=localhost,127.0.0.1"
 
     - name: Creating a file with content
       copy:
