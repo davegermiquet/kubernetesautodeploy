@@ -176,11 +176,9 @@
 
     - name: configure the pool for calico
       command:
-        cmd: /opt/cni/bin/calicoctl create -f /tmp/configurepool.yaml
+        cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf DATASTORE_TYPE=kubernetes /opt/cni/bin/calicoctl create -f /tmp/configurepool.yaml"
         creates: /tmp/poolsetup
-      environment:
-K       UBECONFIG: KUBECONFIG=/etc/kubernetes/admin.conf
-        DATASTORE_TYPE: kubernetes
+
     - name: create passing file
       copy:
         content: ""
