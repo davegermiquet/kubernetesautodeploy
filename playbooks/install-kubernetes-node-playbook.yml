@@ -161,7 +161,7 @@
 
     - name: download cni calico files
       get_url:
-        url: https://docs.projectcalico.org/manifests/tigera-operator.yaml
+        url: hhttps://docs.projectcalico.org/manifests/crds.yaml
         dest:  /tmp/custom-resources.yaml
         mode: '0775'
       environment:
