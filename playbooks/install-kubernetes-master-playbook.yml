@@ -114,9 +114,6 @@
         url:  https://docs.projectcalico.org/manifests/crds.yaml
         dest: /tmp/crds.yaml
         mode: '0775'
-        environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
@@ -174,6 +171,3 @@
         url: https://github.com/kubernetes/kops/releases/download/v1.19.0-beta.3/kops-linux-amd64
         dest: /opt/kops/bin/kops-linux-amd64
         mode: '0775'
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
