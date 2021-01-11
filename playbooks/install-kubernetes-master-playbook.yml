@@ -177,5 +177,3 @@
       environment:
         http_proxy: '{{ http_ansible_proxy }}'
         https_proxy: '{{ http_ansible_proxy }}'
-
-   - name: initialize cluster
