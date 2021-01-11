@@ -113,10 +113,6 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml"
-        creates: /etc/rc.local
-    - name: Initialize the Kubernetes cluster using kubeadm
-      command:
         cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl taint nodes --all node-role.kubernetes.io/master-"
         creates: /etc/rc.local
 
