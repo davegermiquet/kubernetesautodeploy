@@ -176,7 +176,7 @@
 
     - name: Download Calico CTL  binary File
       command:
-        cmd: /opt/cni/bin/calicoctl create -f /tmp/configurepool.yam
+        cmd: /opt/cni/bin/calicoctl create -f /tmp/configurepool.yaml
         creates: /tmp/poolsetup
 
     - name: create passing file
