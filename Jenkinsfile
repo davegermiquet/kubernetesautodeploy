@@ -136,5 +136,22 @@ pipeline {
               '''
                 }
             }
+              stage('install addons to nodes') {
+              environment {
+              SERVER_DEPLOYED="${server_deployed}"
+              PRIVATE_IP_DEPLOYED="${private_ip_deployed}"
+              PRIVATE_NODE_IP="${node_one}"
+              CMD_TO_RUN="${cmd_to_join}"
+              TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
+              MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
+              HTTP_PROXY="http://${private_ip_deployed}:3128"
+              }
+              when {  expression { params.TASK == 'apply' } }
+              steps {
+                sh '''
+                 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-typha-calinco-node.yml
+              '''
+                 }
+              }
         }
  }
