@@ -136,7 +136,7 @@ pipeline {
               '''
                 }
             }
-              stage('install addons to nodes') {
+              stage('install typha to kubernetes') {
               environment {
               SERVER_DEPLOYED="${server_deployed}"
               PRIVATE_IP_DEPLOYED="${private_ip_deployed}"
