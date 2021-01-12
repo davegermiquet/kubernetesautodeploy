@@ -179,6 +179,11 @@
         cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf DATASTORE_TYPE=kubernetes /opt/cni/bin/calicoctl create -f /tmp/configurepool.yaml"
         creates: /tmp/poolsetup
 
+    - name: create calico-cni account
+      command:
+        cmd: kubectl create serviceaccount -n kube-system calico-cni
+        creates: /tmp/poolsetup
+
     - name: create passing file
       copy:
         content: ""
