@@ -112,7 +112,7 @@
 
     - name: configure typha service account
       command:
-        cmd:  kubectl create clusterrolebinding calico-node --clusterrole=calico-node --serviceaccount=kube-system:calico-node
+       cmd:  kubectl create clusterrolebinding calico-node --clusterrole=calico-node --serviceaccount=kube-system:calico-node
        creates: /tmp/calico-usercreated
 
     - name: save state file
