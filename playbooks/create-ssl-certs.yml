@@ -6,7 +6,7 @@
   tasks:
     - name: Creates SSL certficates process
       command:
-        cmd: openssl req -newkey rsa:4096 -keyout //etc/kubernetes/pki/cni.key -nodes -out /etc/kubernetes/pki/cni.csr -subj "/CN=calico-cni"
+        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/cni.key -nodes -out /etc/kubernetes/pki/cni.csr -subj "/CN=calico-cni"
         creates: /tmp/sslcreated
 
     - name: Creates SSL certficates process
