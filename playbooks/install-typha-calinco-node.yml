@@ -121,8 +121,8 @@
           metadata:
             name: calico-typha
             namespace: kube-system
-          labels:
-            k8s-app: calico-typha
+            labels:
+              k8s-app: calico-typha
           spec:
             replicas: 3
             revisionHistoryLimit: 2
