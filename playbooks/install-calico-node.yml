@@ -211,16 +211,16 @@
                         value: "true"
             # Location of the CA bundle Felix uses to authenticate Typha; volume mount
                       - name: FELIX_TYPHACAFILE
-                        value: /calico-typha-ca/typhaca.crt
-            # Common name on the Typha certificate; used to verify we are talking to an authentic typha
+                        value: /etc/kubernetes/pki/typhaca.crt
+            # Common name on the Typha cificate; used to verify we are talking to an authentic typha
                       - name: FELIX_TYPHACN
                         value: calico-typha
             # Location of the client certificate for connecting to Typha; volume mount
                       - name: FELIX_TYPHACERTFILE
-                        value: /calico-node-certs/calico-node.crt
+                        value: /etc/kubernetes/pki/calico-node.crt
             # Location of the client certificate key for connecting to Typha; volume mount
                       - name: FELIX_TYPHAKEYFILE
-                        value: /calico-node-certs/calico-node.key
+                        value: /etc/kubernetes/pki/calico-node.key
                     securityContext:
                       privileged: true
                     resources:
@@ -257,8 +257,14 @@
                         readOnly: false
                       - mountPath: /var/run/nodeagent
                         name: policysync
+                      - mountPath: /etc/kubernetes
+                        name: ssl1
 
                 volumes:
+                  - name: ssl1
+                    hostPath:
+                      path: /etc/kubernetes
+                      type: Directory
                 # Used by calico-node.
                   - name: lib-modules
                     hostPath:
