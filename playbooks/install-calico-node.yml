@@ -257,12 +257,7 @@
                         readOnly: false
                       - mountPath: /var/run/nodeagent
                         name: policysync
-                      - mountPath: "/calico-typha-ca"
-                        name: calico-typha-ca
-                        readOnly: true
-                      - mountPath: /calico-node-certs
-                        name: calico-node-certs
-                        readOnly: true
+
                 volumes:
                 # Used by calico-node.
                   - name: lib-modules
