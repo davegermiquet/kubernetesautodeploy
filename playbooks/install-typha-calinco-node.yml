@@ -31,7 +31,7 @@
 
     - name: Configure typha ssl
       command:
-        cmd: openssl x509 -req -in /etc/kubernetes/pki/csr/typha.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/kubernetes/pki/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/typha.crt -days 365
+        cmd: openssl x509 -req -in /etc/kubernetes/pki/typha.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/kubernetes/pki/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/typha.crt -days 365
         creates: /tmp/typhainstalled
 
     - name: Configure typha secret
