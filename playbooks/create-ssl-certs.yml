@@ -21,7 +21,7 @@
 
     - name: Creates SSL certficates process
       command:
-        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/typha.key -nodes -out /etc/kubernetes/pki/typha. -subj "/CN=calico-typha"
+        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/typha.key -nodes -out /etc/kubernetes/pki/typha.csr-subj "/CN=calico-typha"
         creates: /tmp/sslcreated
 
     - name: Configure typha ssl
