@@ -17,7 +17,17 @@
     - name: configure calico-node service account
       command:
         cmd:  kubectl create serviceaccount -n kube-system calico-node
-        creates: /tmp/calico-nodeinstalled
+        creates: /tmp/calico-usercreated
+
+    - name: save state file
+      copy:
+        content: ""
+        dest: /tmp/calico-usercreated
+        force: no
+        group: root
+        owner: root
+        mode: 0555
+
 
     - name: create role base file
       copy:
