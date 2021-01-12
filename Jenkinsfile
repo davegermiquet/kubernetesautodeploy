@@ -15,8 +15,6 @@ pipeline {
           string(name: 'AWS_SECOND_REGION', defaultValue: 'us-west-1', description: 'Second Region to Deploy')
        }
 
-
-
     stages {
         stage('Create Environment for Kubernetes and Docker') {
               steps {
