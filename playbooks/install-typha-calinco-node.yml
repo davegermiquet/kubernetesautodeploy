@@ -196,7 +196,7 @@
         creates: /tmp/deployinstalled
 
     - name: create deployment of calicnode
-      copy: /tmp/deploycaliconodetypha
+      copy:
         content: |
           apiVersion: v1
           kind: Service
@@ -213,6 +213,7 @@
                 name: calico-typha
             selector:
               k8s-app: calico-typha
+        dest: /tmp/deploycaliconodetypha
         force: no
         group: root
         owner: root
