@@ -29,6 +29,16 @@
         cmd: openssl x509 -req -in /etc/kubernetes/pki/typha.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/kubernetes/pki/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/typha.crt -days 365
         creates: /tmp/sslcreated
 
+    - name: Configure calico node
+      command:
+        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/calico-node.key -nodes -out /etc/kubernetes/pki/calico-node.csr -subj "/CN=calico-node"
+        creates: /tmp/sslcreated
+
+    - name: Configure calico node
+      command:
+        cmd: openssl x509 -req -in /etc/kubernetes/pki/calico-node.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/kubernetes/pki/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/calico-node.crt -days 365
+        creates: /tmp/sslcreated
+
     - name: copy kubernetes admin
       synchronize:
         mode: pull
