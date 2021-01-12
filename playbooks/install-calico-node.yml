@@ -158,53 +158,53 @@
                     image: calico/node:v3.8.0
                     env:
             # Use Kubernetes API as the backing datastore.
-                    - name: DATASTORE_TYPE
-                      value: "kubernetes"
-                    - name: FELIX_TYPHAK8SSERVICENAME
-                      value: calico-typha
+                      - name: DATASTORE_TYPE
+                        value: "kubernetes"
+                      - name: FELIX_TYPHAK8SSERVICENAME
+                        value: calico-typha
             # Wait for the datastore.
-                    - name: WAIT_FOR_DATASTORE
-                      value: "true"
+                      - name: WAIT_FOR_DATASTORE
+                        value: "true"
             # Set based on the k8s node name.
-                    - name: NODENAME
-                      valueFrom:
-                        fieldRef:
-                          fieldPath: spec.nodeName
+                      - name: NODENAME
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: spec.nodeName
             # Choose the backend to use.
-                    - name: CALICO_NETWORKING_BACKEND
-                      value: bird
+                      - name: CALICO_NETWORKING_BACKEND
+                        value: bird
             # Cluster type to identify the deployment type
-                    - name: CLUSTER_TYPE
-                      value: "k8s,bgp"
+                      - name: CLUSTER_TYPE
+                        value: "k8s,bgp"
             # Auto-detect the BGP IP address.
-                     - name: IP
-                       value: "autodetect"
+                      - name: IP
+                        value: "autodetect"
             # Disable file logging so kubectl logs works.
-                     - name: CALICO_DISABLE_FILE_LOGGING
-                       value: "true"
+                      - name: CALICO_DISABLE_FILE_LOGGING
+                        value: "true"
             # Set Felix endpoint to host default action to ACCEPT.
-                     - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
-                       value: "ACCEPT"
+                      - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
+                        value: "ACCEPT"
             # Disable IPv6 on Kubernetes.
-                     - name: FELIX_IPV6SUPPORT
-                       value: "false"
+                      - name: FELIX_IPV6SUPPORT
+                        value: "false"
             # Set Felix logging to "info"
-                     - name: FELIX_LOGSEVERITYSCREEN
-                       value: "info"
-                     - name: FELIX_HEALTHENABLED
-                       value: "true"
+                      - name: FELIX_LOGSEVERITYSCREEN
+                        value: "info"
+                      - name: FELIX_HEALTHENABLED
+                        value: "true"
             # Location of the CA bundle Felix uses to authenticate Typha; volume mount
-                     - name: FELIX_TYPHACAFILE
-                       value: /calico-typha-ca/typhaca.crt
+                      - name: FELIX_TYPHACAFILE
+                        value: /calico-typha-ca/typhaca.crt
             # Common name on the Typha certificate; used to verify we are talking to an authentic typha
-                     - name: FELIX_TYPHACN
-                       value: calico-typha
+                      - name: FELIX_TYPHACN
+                        value: calico-typha
             # Location of the client certificate for connecting to Typha; volume mount
-                     - name: FELIX_TYPHACERTFILE
-                       value: /calico-node-certs/calico-node.crt
+                      - name: FELIX_TYPHACERTFILE
+                        value: /calico-node-certs/calico-node.crt
             # Location of the client certificate key for connecting to Typha; volume mount
-                     - name: FELIX_TYPHAKEYFILE
-                       value: /calico-node-certs/calico-node.key
+                      - name: FELIX_TYPHAKEYFILE
+                        value: /calico-node-certs/calico-node.key
                     securityContext:
                       privileged: true
                     resources:
