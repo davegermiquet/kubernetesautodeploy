@@ -14,19 +14,9 @@
         path: /opt/cni/bin/
         state: directory
 
-    - name: Creates ssl folders
-      file:
-        path: /etc/ssl/csr/
-        state: directory
-
-    - name: Creates ssl folders
-      file:
-        path: /etc/ssl/private/
-        state: directory
-
     - name: Creates SSL certficates process
       command:
-        cmd: openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/typhaca.key -nodes -out /etc/kubernetes/pki/typhaca.crt -subj "/CN=Calico Typha CA" -days 365
+        cmd: openssl req -x509 -newkey rsa:4096 -keyout /etc/kubernetes/pki/typhaca.key -nodes -out /etc/kubernetes/pki/typhaca.crt -subj "/CN=Calico Typha CA" -days 365
         creates: /tmp/typhainstalled
 
     - name: Configure typha for ssl
@@ -36,17 +26,17 @@
 
     - name: Creates SSL certficates process
       command:
-        cmd: openssl req -newkey rsa:4096 -keyout /etc/ssl/private/typha.key -nodes -out /etc/ssl/csr/typha.csr -subj "/CN=calico-typha"
+        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/private/typha.key -nodes -out /etc/kubernetes/pki/typha.csr -subj "/CN=calico-typha"
         creates: /tmp/typhainstalled
 
     - name: Configure typha ssl
       command:
-        cmd: openssl x509 -req -in /etc/ssl/csr/typha.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/ssl/private/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/typha.crt -days 365
+        cmd: openssl x509 -req -in /etc/kubernetes/pki/csr/typha.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/ssl/private/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/typha.crt -days 365
         creates: /tmp/typhainstalled
 
     - name: Configure typha secret
       command:
-        cmd:  kubectl create secret generic -n kube-system calico-typha-certs --from-file=/etc/ssl/private/typha.key --from-file=/etc/kubernetes/pki/typha.crt
+        cmd:  kubectl create secret generic -n kube-system calico-typha-certs --from-file=/etc/kubernetes/pki/private/typha.key --from-file=/etc/kubernetes/pki/typha.crt
         creates: /tmp/typhainstalled
 
     - name: configure typha service account
@@ -175,7 +165,7 @@
                       value: /etc/kubernetes/pki/typha.crt
                     # Location of the server certificate key for Typha; volume mount
                     - name: TYPHA_SERVERKEYFILE
-                      value: /etc/ssl/private/typha.key
+                      value: /etc/kubernetes/pki/typha.key
                   livenessProbe:
                     httpGet:
                       path: /liveness
@@ -190,19 +180,14 @@
                       host: localhost
                     periodSeconds: 10
                   volumeMounts:
-                    - name: calico-typha-ca
-                      mountPath: "/calico-typha-ca"
-                      readOnly: true
-                    - name: calico-typha-certs
-                      mountPath: "/calico-typha-certs"
-                      readOnly: true
+                    - mountPath: /etc/kubernetes
+                      name: ssl1
                 volumes:
-                  - name: calico-typha-ca
-                    configMap:
-                      name: calico-typha-ca
-                  - name: calico-typha-certs
-                    secret:
-                      secretName: calico-typha-certs
+                  - name: ssl1
+                    hostPath:
+                      path: /etc/kubernetes
+                      type: Directory
+
         dest: /tmp/deployaccount
         force: no
         group: root
