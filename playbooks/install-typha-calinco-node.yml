@@ -147,9 +147,9 @@
             - image: calico/typha:v3.8.0
               name: calico-typha
               ports:
-                - containerPort: 5473
-                    name: calico-typha
-                    protocol: TCP
+              - containerPort: 5473
+                name: calico-typha
+                protocol: TCP
               env:
                 # Disable logging to file and syslog since those don't make sense in Kubernetes.
                 - name: TYPHA_LOGFILEPATH
