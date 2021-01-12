@@ -36,6 +36,7 @@
                 - nodes
                 - endpoints
                 - configmap
+                - nodes/proxy
               verbs:
             # Used to discover service IPs for advertisement.
                 - watch
@@ -95,7 +96,7 @@
             labels:
               k8s-app: calico-typha
           spec:
-            replicas: 3
+            replicas: 2
             revisionHistoryLimit: 2
             selector:
               matchLabels:
@@ -192,6 +193,34 @@
     - name: Deploy the typha
       command:
         cmd:  kubectl apply -f /tmp/deployaccount
+        creates: /tmp/deployinstalled
+
+    - name: create deploymnet
+      copy: /tmp/deploycaliconode
+        content: |
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: calico-typha
+            namespace: kube-system
+            labels:
+              k8s-app: calico-typha
+          spec:
+            ports:
+              - port: 5473
+                protocol: TCP
+                targetPort: calico-typha
+                name: calico-typha
+            selector:
+              k8s-app: calico-typha
+        force: no
+        group: root
+        owner: root
+        mode: 0555
+
+    - name: Deploy the typha
+      command:
+        cmd:  kubectl apply -f /tmp/deploycaliconode
         creates: /tmp/deployinstalled
 
     - name: save state file
