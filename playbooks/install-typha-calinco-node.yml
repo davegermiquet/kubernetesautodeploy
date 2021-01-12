@@ -14,26 +14,6 @@
         path: /opt/cni/bin/
         state: directory
 
-    - name: Creates SSL certficates process
-      command:
-        cmd: openssl req -x509 -newkey rsa:4096 -keyout /etc/kubernetes/pki/typhaca.key -nodes -out /etc/kubernetes/pki/typhaca.crt -subj "/CN=Calico Typha CA" -days 365
-        creates: /tmp/typhainstalled
-
-    - name: Configure typha for ssl
-      command:
-        cmd:  sudo sh -c "kubectl create configmap -n kube-system calico-typha-ca --from-file=/etc/kubernetes/pki/typhaca.crt"
-        creates: /tmp/typhainstalled
-
-    - name: Creates SSL certficates process
-      command:
-        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/typha.key -nodes -out /etc/kubernetes/pki/typha. -subj "/CN=calico-typha"
-        creates: /tmp/typhainstalled
-
-    - name: Configure typha ssl
-      command:
-        cmd: openssl x509 -req -in /etc/kubernetes/pki/typha.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/kubernetes/pki/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/typha.crt -days 365
-        creates: /tmp/typhainstalled
-
     - name: configure typha service account
       command:
         cmd:  kubectl create serviceaccount -n kube-system calico-typha
@@ -203,6 +183,7 @@
         cmd:  kubectl create clusterrolebinding calico-typha --clusterrole=calico-typha --serviceaccount=kube-system:calico-typha
         creates: /tmp/deployinstalled
 
+    - name: Deploy the typha
       command:
         cmd:  kubectl apply -f /tmp/deployaccount
         creates: /tmp/deployinstalled

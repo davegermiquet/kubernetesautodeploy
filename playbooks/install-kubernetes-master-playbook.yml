@@ -136,13 +136,6 @@
         state: started
         name: rc-local
 
-    - name: copy kubernetes admin
-      synchronize:
-        mode: pull
-        src: "/etc/kubernetes/"
-        dest: "{{ workspace }}/etc/kubernetes/"
-        recursive: yes
-
     - name: Creates directory
       file:
         path: /opt/kops/bin/

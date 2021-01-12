@@ -141,7 +141,7 @@
         cmd:  sh -c "sudo /home/ubuntu/run_to_connect_node.sh"
         creates: /etc/rc.local
 
-    - name: copy kubernetes admin
+    - name: synchroize master folder to node /etc/kubernetes
       synchronize:
         src: "{{ workspace }}/etc/kubernetes/"
         dest: /etc/kubernetes/

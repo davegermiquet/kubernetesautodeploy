@@ -14,29 +14,9 @@
         path: /opt/cni/bin/
         state: directory
 
-    - name: Creates ssl folders
-      file:
-        path: /etc/ssl/csr/
-        state: directory
-
-    - name: Creates ssl folders
-      file:
-        path: /etc/ssl/private/
-        state: directory
-
-    - name: Creates SSL certficates process
-      command:
-        cmd: openssl req -newkey rsa:4096 -keyout /etc/ssl/private/cni.key -nodes -out /etc/ssl/csr/cni.csr -subj "/CN=calico-cni"
-        creates: /tmp/cniinstalled
-
-    - name: Creates SSL certficates process
-      command:
-        cmd: openssl x509 -req -in /etc/ssl/csr/cni.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/cni.crt -days 365
-        creates: /tmp/cniinstalled
-
     - name: Configure calico
       command:
-        cmd:  sudo sh -c "kubectl config set-credentials calico-cni --client-certificate=/etc/kubernetes/pki/cni.crt --client-key=/etc/ssl/private/cni.key --embed-certs=true --kubeconfig=/tmp/cni.kubeconfig"
+        cmd:  sudo sh -c "kubectl config set-credentials calico-cni --client-certificate=/etc/kubernetes/pki/cni.crt --client-key=/etc/kubernetes/pki/cni.key --embed-certs=true --kubeconfig=/tmp/cni.kubeconfig"
         creates: /tmp/cniinstalled
 
     - name: Configure calico
