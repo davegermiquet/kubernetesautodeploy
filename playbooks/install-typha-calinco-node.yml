@@ -216,7 +216,9 @@
         force: no
         group: root
         owner: root
-        mode: 0555    - name: configure typha service account
+        mode: 0555   
+
+    - name: configure typha service account
       command:
         cmd:  kubectl create clusterrolebinding calico-typha --clusterrole=calico-typha --serviceaccount=kube-system:calico-typha
         creates: /tmp/deployinstalled
