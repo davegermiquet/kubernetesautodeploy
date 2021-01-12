@@ -80,7 +80,7 @@
             verbs:
               - create
               - update
-         # Calico stores some configuration information on the node.
+          # Calico stores some configuration information on the node.
           - apiGroups: [""]
             resources:
               - nodes
