@@ -32,9 +32,10 @@
                 - pods
                 - namespaces
                 - serviceaccounts
-                - endpoints
                 - services
                 - nodes
+                - endpoints
+                - configmap
               verbs:
             # Used to discover service IPs for advertisement.
                 - watch
