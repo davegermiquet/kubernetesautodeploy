@@ -209,13 +209,30 @@
         owner: root
         mode: 0555
 
-    - name: configure typha service account
+    - name: save state file
+      copy:
+        content: ""
+        dest: /tmp/typhainstalled
+        force: no
+        group: root
+        owner: root
+        mode: 0555    - name: configure typha service account
       command:
         cmd:  kubectl create clusterrolebinding calico-typha --clusterrole=calico-typha --serviceaccount=kube-system:calico-typha
         creates: /tmp/typhainstalled
 
-    - name: configure typha service account
+        creates:/tmp/deployinstalled
       command:
         cmd:  kubectl apply -f /tmp/deployaccount
         creates: /tmp/typhainstalled
 
+        creates: /tmp/deployinstalled
+
+    - name: save state file
+      copy:
+        content: ""
+        dest: /tmp/deployinstalled
+        force: no
+        group: root
+        owner: root
+        mode: 0555
