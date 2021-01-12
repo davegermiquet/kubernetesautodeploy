@@ -127,8 +127,8 @@
             replicas: 3
             revisionHistoryLimit: 2
             selector:
-            matchLabels:
-              k8s-app: calico-typha
+              matchLabels:
+                k8s-app: calico-typha
           template:
             metadata:
               labels:
@@ -216,7 +216,7 @@
         force: no
         group: root
         owner: root
-        mode: 0555   
+        mode: 0555
 
     - name: configure typha service account
       command:
