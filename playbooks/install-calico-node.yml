@@ -173,7 +173,9 @@
                   - name: calico-node
                     image: calico/node:v3.8.0
                     env:
-                      # Use Kubernetes API as the backing datastore.
+                      - name: CALICO_NETWORKING_BACKEND
+                        value: "none"
+                      # Use Kubernetes API as the backing datastore
                       - name: DATASTORE_TYPE
                         value: "kubernetes"
                       - name: FELIX_TYPHAK8SSERVICENAME
