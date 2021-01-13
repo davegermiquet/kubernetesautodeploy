@@ -1,4 +1,4 @@
-J|Components Installed | Description |
+|Components Installed | Description |
 | ----------- | ----------- |
 | Docker   |  Container/Linux System |
 | Kubernetes  |  Cluster/Management System (manages docker)|
