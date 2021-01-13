@@ -240,7 +240,6 @@
                       exec:
                         command:
                           - /bin/calico-node
-                          - -bird-ready
                           - -felix-ready
                       periodSeconds: 10
 
