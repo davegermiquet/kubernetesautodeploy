@@ -178,7 +178,7 @@
                         value: calico-typha
                       # Wait for the datastore.
                       - name: FELIX_IGNORELOOSERPF
-                        value: true
+                        value: "true"
                       - name: WAIT_FOR_DATASTORE
                         value: "true"
                       # Set based on the k8s node name.
