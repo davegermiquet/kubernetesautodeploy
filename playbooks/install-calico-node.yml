@@ -174,7 +174,7 @@
                     image: calico/node:v3.8.0
                     env:
                       - name: CALICO_NETWORKING_BACKEND
-                        value: "none"
+                        value: "vxlan"
                       # Use Kubernetes API as the backing datastore
                       - name: DATASTORE_TYPE
                         value: "kubernetes"
