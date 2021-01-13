@@ -21,10 +21,10 @@
         owner: root
         mode: 0555
 
-   - name: Initialize the Kubernetes cluster using kubeadm
-     command:
-       cmd:  calicoctl apply -f /tmp/felixconfig
-       creates: /tmp/felixconfigured
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command:
+        cmd:  calicoctl apply -f /tmp/felixconfig
+        creates: /tmp/felixconfigured
 
     - name: save state file
       copy:
