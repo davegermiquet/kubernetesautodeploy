@@ -179,6 +179,8 @@
                       - name: FELIX_TYPHAK8SSERVICENAME
                         value: calico-typha
                  # Wait for the datastore.
+                      - name: FELIX_IGNORELOOSERPF
+                        value: "true"
                       - name: WAIT_FOR_DATASTORE
                         value: "true"
                 # Set based on the k8s node name.
@@ -294,7 +296,6 @@
     - name: Deploy the typha
       command:
         cmd:  kubectl apply -f /tmp/deploycaliconodeimage
-        creates: /tmp/calico-nodeinstalled
 
     - name: save state file
       copy:
