@@ -23,7 +23,7 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  calicoctl apply -f /tmp/felixconfig
+        cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf DATASTORE_TYPE=kubernetes /opt/cni/bin/calicoctl apply -f /tmp/felixconfig"
         creates: /tmp/felixconfigured
 
     - name: save state file
