@@ -19,3 +19,4 @@ Severs Deployed:
 - A Private and Public Network
 - Node On Private Network no access to outside world except through squid
 - Master on public network
+- Calico Configured VXLAN (Will configure BGP option as well TODO)
