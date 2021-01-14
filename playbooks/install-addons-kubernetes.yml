@@ -29,15 +29,58 @@
         cmd:  sudo sh -c "kubectl config use-context default --kubeconfig=/tmp/cni.kubeconfig"
         creates: /tmp/cniinstalled
 
-    - file:
-        path: /tmp/rbacalico.sh
-        state: touch
-        mode: "u+rwx,g+rx,o+rx"
+    - name: create role for calinco
+      copy:
+        content: |
+          kind: ClusterRole
+          apiVersion: rbac.authorization.k8s.io/v1
+          metadata:
+            name: calico-cni
+          rules:
+          # The CNI plugin needs to get pods, nodes, and namespaces.
+            - apiGroups: [""]
+              resources:
+                - pods
+                - nodes
+                - namespaces
+              verbs:
+                - get
+          # The CNI plugin patches pods/status.
+            - apiGroups: [""]
+              resources:
+                - pods/status
+              verbs:
+                - patch
+          # These permissions are required for Calico CNI to perform IPAM allocations.
+            - apiGroups: ["crd.projectcalico.org"]
+              resources:
+                - blockaffinities
+                - ipamblocks
+                - ipamhandles
+              verbs:
+                - get
+                - list
+                - create
+                - update
+                - delete
+                - apiGroups: ["crd.projectcalico.org"]
+              resources:
+                - ipamconfigs
+                - clusterinformations
+                - ippools
+              verbs:
+                - get
+                - list
+        dest: /tmp/calicorole
+        force: no
+        group: root
+        owner: root
+        mode: 0555
+
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  sudo sh -c "/tmp/rbacalico.sh"
-        creates: /tmp/cniinstalled
+        cmd: kubectl apply -f /tmp/calicorole
 
     - name: Download calico application
       get_url:
