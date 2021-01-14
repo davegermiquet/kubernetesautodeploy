@@ -44,6 +44,7 @@
         mode: pull
         src: "/etc/kubernetes/"
         dest: "{{ workspace }}/etc/kubernetes/"
+        checksum: yes
         recursive: yes
 
     - name: save state file

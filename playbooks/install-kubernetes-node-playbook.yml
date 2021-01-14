@@ -146,12 +146,14 @@
         mode: pull
         src: "/etc/kubernetes/manifests/"
         dest: "{{ workspace }}/etc/kubernetes/manifests/"
+        checksum: yes
         recursive: yes
 
     - name: synchroize master folder to node /etc/kubernetes
       synchronize:
         src: "{{ workspace }}/etc/kubernetes/"
         dest: /etc/kubernetes/
+        checksum: yes
         recursive: yes
 
     - name: Creating a file with content
