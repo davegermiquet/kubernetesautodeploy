@@ -145,6 +145,8 @@
       synchronize:
         src: "{{ workspace }}/etc/kubernetes/"
         dest: /etc/kubernetes/
+        rsync_opts:
+          - "--exclude=/etc/kubernetes/manifests/"
         recursive: yes
 
     - name: Creating a file with content
