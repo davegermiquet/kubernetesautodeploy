@@ -144,7 +144,7 @@
     - name: copy kubernetes from node
       synchronize:
         mode: pull
-        src: "/etc/kubernetes/manifests"
+        src: "/etc/kubernetes/manifests/"
         dest: "{{ workspace }}/etc/kubernetes/manifests/"
         recursive: yes
 
@@ -153,8 +153,6 @@
         src: "{{ workspace }}/etc/kubernetes/"
         dest: /etc/kubernetes/
         recursive: yes
-
-
 
     - name: Creating a file with content
       copy:
