@@ -41,12 +41,14 @@
             # Used to discover service IPs for advertisement.
                 - watch
                 - list
+                - watch
             - apiGroups: ["networking.k8s.io"]
               resources:
                 - networkpolicies
               verbs:
-                - watch
                 - list
+                - get
+                - watch
             - apiGroups: ["crd.projectcalico.org"]
               resources:
                 - globalfelixconfigs
