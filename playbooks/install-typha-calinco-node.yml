@@ -39,9 +39,9 @@
                 - nodes/proxy
               verbs:
             # Used to discover service IPs for advertisement.
-                - watch
                 - list
                 - watch
+                - get
             - apiGroups: ["networking.k8s.io"]
               resources:
                 - networkpolicies
@@ -85,7 +85,6 @@
     - name: Deploy the typha
       command:
         cmd:  kubectl apply -f /tmp/roleaccount
-        creates: /tmp/deployinstalled
 
     - name: create deploymnet
       copy:
