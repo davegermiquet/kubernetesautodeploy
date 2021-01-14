@@ -136,20 +136,18 @@
         state: touch
         mode: "u+rwx,g+rx,o+rx"
 
-    - name: synchroize master folder to node /etc/kubernetes
-      synchronize:
-        src: "{{ workspace }}/etc/kubernetes/"
-        dest: /etc/kubernetes/
-        rsync_opts:
-          - "--exclude=/etc/kubernetes/manifests/"
-        recursive: yes
-
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  sh -c "sudo /home/ubuntu/run_to_connect_node.sh"
         creates: /etc/rc.local
 
-
+    - name: synchroize master folder to node /etc/kubernetes
+      synchronize:
+        src: "{{ workspace }}/etc/kubernetes/"
+        dest: /etc/kubernetes/
+        rsync_opts:
+          - "--exclude=manifests"
+        recursive: yes
 
     - name: Creating a file with content
       copy:
