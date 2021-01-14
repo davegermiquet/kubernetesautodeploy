@@ -60,4 +60,7 @@
         mode: pull
         src: "/etc/kubernetes/"
         dest: "{{ workspace }}/etc/kubernetes/"
+        rsync_opts:
+          - "--exclude=/etc/kubernetes/manifests/"
+        recursive: yes
         recursive: yes
