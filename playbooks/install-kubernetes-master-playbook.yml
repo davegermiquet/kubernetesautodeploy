@@ -29,13 +29,21 @@
       yum_repository:
         name: docker-repo
         description: EPEL YUM repo
-        baseurl:  https://download.docker.com/linux/centos/7/x86_64/stable/
+        baseurl:  https://download.docker.com/linux/centos/7/x86_64/stable/repodata
 
     - name: Add repository
       yum_repository:
-        name: epel-repo
-        description: EPEL YUM repo
+        name: kubernetes
+        description: kuberenetes
         baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+
+
+    - name: Add repository
+      yum_repository:
+        name: selinux
+        description: selinux
+        baseurl: http://mirror.centos.org/centos/7/extras/x86_64/
+
 
     - name: Install required system packages
       yum:
