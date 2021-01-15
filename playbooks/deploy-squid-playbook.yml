@@ -13,22 +13,6 @@
           - squid
           - httpd
 
-
-    - name: Create a symbolic link
-      file:
-        path: /var/www/html/ec2-user
-        owner: www-data
-        group: www-data
-        state: directory
-
-    - name: Change file ownership, group and permissions
-      file:
-        path: /var/www/html/
-        owner: www-data
-        group: www-data
-        recurse: yes
-        mode: '0770'
-
     - name: Explicitly specifying named matched groups
       replace:
         destfile: /etc/squid/squid.conf
