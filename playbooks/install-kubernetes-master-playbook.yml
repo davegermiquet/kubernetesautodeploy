@@ -103,7 +103,7 @@
 
     - name: Creating a file with content
       copy:
-        dest: "/tmp/controller.yml"
+        dest: "/tmp/newcontroller.yml"
         content:
           apiVersion: v1
           kind: Pod
