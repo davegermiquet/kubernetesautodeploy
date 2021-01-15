@@ -21,6 +21,7 @@
         name:
           - yum-utils
           - python3
+          - openssl
           - python3-pip
         state: installed
 
