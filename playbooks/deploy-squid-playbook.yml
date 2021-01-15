@@ -19,7 +19,7 @@
 
     - name: Create a symbolic link
       file:
-        path: /var/www/html/ubuntu
+        path: /var/www/html/ec2-user
         owner: www-data
         group: www-data
         state: directory

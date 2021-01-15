@@ -41,7 +41,7 @@ pipeline {
          steps  {
               sh  '''
               echo "awsserver ansible_port=22 ansible_host=${SERVER_DEPLOYED}" > inventory_hosts
-              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml
+              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml
               '''
               }
            }
@@ -57,8 +57,8 @@ pipeline {
                 echo "awsserver ansible_port=22 ansible_host=${SERVER_DEPLOYED}" > inventory_hosts
                 echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
                 mkdir -p etc/kubernetes/
-                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-kubernetes-master-playbook.yml
-                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/create-ssl-certs.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-kubernetes-master-playbook.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/create-ssl-certs.yml
               '''
                }
               }
@@ -80,17 +80,17 @@ pipeline {
               sh '''
                 echo "Setup Bastion Hosts/Squid Server for Node"
                 echo $MAKEPROXY > /tmp/testfile
-                scp -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@${SERVER_DEPLOYED}:/tmp/testfile
-                scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ubuntu@${SERVER_DEPLOYED}:/tmp/autoscript.sh
-                scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ubuntu@${SERVER_DEPLOYED}:/home/ubuntu/.ssh/id_rsa
-                ssh -l ubuntu -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
-                ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${PRIVATE_NODE_IP}:22 ubuntu@${SERVER_DEPLOYED} /tmp/autoscript.sh &
+scp -o "StrictHostKeyChecking=no" /tmp/testfile ec2-user@${SERVER_DEPLOYED}:/tmp/testfile
+scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ec2-user@${SERVER_DEPLOYED}:/tmp/autoscript.sh
+scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ec2-user@${SERVER_DEPLOYED}:/home/ec2-user/.ssh/id_rsa
+ssh -l ec2-user -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
+ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${PRIVATE_NODE_IP}:22 ec2-user@${SERVER_DEPLOYED} /tmp/autoscript.sh &
                 sleep 5
-                scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ubuntu@localhost:/home/ubuntu/.ssh/id_rsa
-                ssh -o "port=2222" -o "StrictHostKeyChecking=no" ubuntu@localhost sudo service ssh restart
+scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ec2-user@localhost:/home/ec2-user/.ssh/id_rsa
+ssh -o "port=2222" -o "StrictHostKeyChecking=no" ec2-user@localhost sudo service ssh restart
                 echo "for NODE Installation"
-                scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ubuntu@localhost:/tmp/testfile
-                ssh -o "port=2222" -o "StrictHostKeyChecking no" ubuntu@localhost sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
+scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ec2-user@localhost:/tmp/testfile
+                ssh -o "port=2222" -o "StrictHostKeyChecking no" ec2-user@localhost sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
               '''
                 }
               }
@@ -109,8 +109,8 @@ pipeline {
               steps  {
                 sh  '''
                 echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
-                ssh -o "StrictHostKeyChecking=no" ubuntu@${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /home/ubuntu/run_to_connect_node.sh ubuntu@${PRIVATE_NODE_IP}:/home/ubuntu/run_to_connect_node.sh
-                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
+ssh -o "StrictHostKeyChecking=no" ec2-user${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /home/ec2-user/run_to_connect_node.sh ec2-user@${PRIVATE_NODE_IP}:/home/ec2-user/run_to_connect_node.sh
+                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
                 '''
                 }
                }
@@ -128,8 +128,8 @@ pipeline {
               when {  expression { params.TASK == 'apply' } }
               steps {
               sh '''
-              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
-              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
               '''
                 }
             }
@@ -146,9 +146,9 @@ pipeline {
               when {  expression { params.TASK == 'apply' } }
               steps {
                 sh '''
-                 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-typha-calinco-node.yml
-                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-calico-node.yml
-                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ubuntu --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/configure-felix-configure-bgp.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-typha-calinco-node.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-calico-node.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/configure-felix-configure-bgp.yml
               '''
                  }
               }

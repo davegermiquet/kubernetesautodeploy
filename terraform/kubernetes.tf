@@ -163,6 +163,8 @@ resource "aws_route_table_association" "kubernetes_public_subnet_route_associati
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
+  algorithm   = "ECDSA"
+  ecdsa_curve = "P521"
   public_key = var.SSH_PUB
 }
 
