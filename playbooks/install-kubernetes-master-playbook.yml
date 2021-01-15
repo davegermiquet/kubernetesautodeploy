@@ -27,13 +27,13 @@
 
     - name: Add repository
       yum_repository:
-        name: epel
+        name: docker-repo
         description: EPEL YUM repo
         baseurl:  https://download.docker.com/linux/centos/docker-ce.repo
 
     - name: Add repository
       yum_repository:
-        name: epel
+        name: epel-repo
         description: EPEL YUM repo
         baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 
