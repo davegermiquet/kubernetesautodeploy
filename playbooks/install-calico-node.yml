@@ -271,9 +271,11 @@
                       path: /lib/modules
                   - name: var-run-calico
                     hostPath:
+                      type: DirectoryOrCreate
                       path: /var/run/calico
                   - name: var-lib-calico
                     hostPath:
+                      type: DirectoryOrCreate
                       path: /var/lib/calico
                   - name: xtables-lock
                     hostPath:
