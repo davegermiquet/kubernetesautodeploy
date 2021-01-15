@@ -7,11 +7,10 @@
     - name: Install required system packages
       yum:
         name:
-          - avahi-tools
+          - avahi
+          - python3-pip
           - curl
-          - python3-tools
           - squid
-          - epel-release
           - httpd
 
 
