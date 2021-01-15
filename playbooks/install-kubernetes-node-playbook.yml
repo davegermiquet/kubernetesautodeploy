@@ -145,7 +145,8 @@
     - name: backup the manifests folder
       copy:
         src: /etc/kubernetes/manifests/
-        dest: /tmp/manifests remote_src=yes
+        dest: /tmp/manifests
+        remote_src: yes
         directory_mode: yes
 
     - name: synchroize master folder to node /etc/kubernetes
