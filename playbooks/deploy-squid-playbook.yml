@@ -8,7 +8,6 @@
       yum:
         name:
           - avahi-tools
-          - avahi-ui-tools
           - curl
           - python3-tools
           - squid
