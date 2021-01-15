@@ -12,7 +12,6 @@
           - curl
           - python3-tools
           - squid
-          - avahi-daemon
           - epel-release
           - httpd
 
