@@ -29,7 +29,7 @@
       yum_repository:
         name: docker-repo
         description: EPEL YUM repo
-        baseurl:  https://download.docker.com/linux/centos/docker-ce.repo
+        baseurl:  https://download.docker.com/linux/centos/7/x86_64/stable/repodata
 
     - name: Add repository
       yum_repository:
