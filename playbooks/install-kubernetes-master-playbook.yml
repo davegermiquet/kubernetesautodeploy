@@ -5,46 +5,47 @@
 
   tasks:
     - name: Install required system packages
-      apt:
-        pkg:
-          - apt-transport-https
-          - ca-certificates
-          - software-properties-common
-          - curl
-          - python3-setuptools
+      yum:
+        name:
+          - docker 
+          - docker-client
+          - docker-client-latest
+          - docker-common
+          - docker-latest
+          - docker-latest-logrotate
+          - docker-logrotate
+          - docker-engine
+        state: removed
+    - name: Install required system packages
+      yum:
+        name:
+          - yum-utils
+          - python3
           - python3-pip
+        state: installed
 
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-        validate_certs: no
+    - name: Add repository
+      yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl:  https://download.docker.com/linux/centos/docker-ce.repo
 
-    - name: Add kubernetes GPG apt Key
-      apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
-        validate_certs: no
+    - name: Add repository
+      yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 
-    - name: Add specified repository into sources list
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
-        state: present
-
-    - name: Add specified repository into sources list
-      apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
-        state: present
-
-    - name: Update apt and install docker-ce
-      apt:
-        pkg:
+    - name: Install required system packages
+      yum:
+        name:
           - docker-ce
           - docker-ce-cli
           - containerd.io
           - kubelet
           - kubeadm
           - kubectl
+        state: installed
 
     -  name: Install Docker Module for Python
        pip:
@@ -101,142 +102,6 @@
           [Install]
           WantedBy=multi-user.target
 
-    - name: Creating a file with content
-      copy:
-        dest: "/tmp/newcontroller.yml"
-        content:
-          apiVersion: v1
-          kind: Pod
-          metadata:
-            creationTimestamp: null
-            labels:
-              component: kube-controller-manager
-              tier: control-plane
-            name: kube-controller-manager
-            namespace: kube-system
-          spec:
-            containers:
-            - command:
-              - kube-controller-manager
-              - --allocate-node-cidrs=true
-              - --authentication-kubeconfig=/etc/kubernetes/controller-manager.conf
-              - --authorization-kubeconfig=/etc/kubernetes/controller-manager.conf
-              - --bind-address=127.0.0.1
-              - --client-ca-file=/etc/kubernetes/pki/ca.crt
-              - --cluster-cidr=192.168.0.0/16
-              - --cluster-name=kubernetes
-              - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
-              - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
-              - --controllers=*,bootstrapsigner,tokencleaner
-              - --kubeconfig=/etc/kubernetes/controller-manager.conf
-              - --leader-elect=true
-              - --port=0
-              - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
-              - --root-ca-file=/etc/kubernetes/pki/ca.crt
-              - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
-              - --service-cluster-ip-range=10.96.0.0/12
-              - --use-service-account-credentials=true
-              image: k8s.gcr.io/kube-controller-manager:v1.20.2
-              imagePullPolicy: IfNotPresent
-              livenessProbe:
-                failureThreshold: 8
-                httpGet:
-                  host: 127.0.0.1
-                  path: /healthz
-                  port: 10257
-                  scheme: HTTPS
-                initialDelaySeconds: 10
-                periodSeconds: 10
-                timeoutSeconds: 15
-              name: kube-controller-manager
-              resources:
-                requests:
-                  cpu: 200m
-              startupProbe:
-                failureThreshold: 24
-                httpGet:
-                  host: 127.0.0.1
-                  path: /healthz
-                  port: 10257
-                  scheme: HTTPS
-                initialDelaySeconds: 10
-                periodSeconds: 10
-                timeoutSeconds: 15
-              volumeMounts:
-              - mountPath: /etc/ssl/certs
-                name: ca-certs
-                readOnly: true
-              - mountPath: /var/run/calico
-                name: calicorun
-              - mountPath: /var/lib/calico
-                name: calicolib
-                readOnly: true
-              - mountPath: /etc/ca-certificates
-                name: etc-ca-certificates
-                readOnly: true
-              - mountPath: /etc/pki
-                name: etc-pki
-                readOnly: true
-              - mountPath: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
-                name: flexvolume-dir
-              - mountPath: /etc/kubernetes/pki
-                name: k8s-certs
-                readOnly: true
-              - mountPath: /etc/kubernetes/controller-manager.conf
-                name: kubeconfig
-                readOnly: true
-              - mountPath: /usr/local/share/ca-certificates
-                name: usr-local-share-ca-certificates
-                readOnly: true
-              - mountPath: /usr/share/ca-certificates
-                name: usr-share-ca-certificates
-                readOnly: true
-            hostNetwork: true
-            priorityClassName: system-node-critical
-            volumes:
-            - hostPath:
-                path: /etc/ssl/certs
-                type: DirectoryOrCreate
-                name: ca-certs
-            - hostPath:
-                path: /etc/ca-certificates
-                type: DirectoryOrCreate
-                name: etc-ca-certificates
-            - hostPath:
-                path: /etc/pki
-                type: DirectoryOrCreate
-                name: etc-pki
-            - hostPath:
-                path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
-                type: DirectoryOrCreate
-                name: flexvolume-dir
-            - hostPath:
-                path: /etc/kubernetes/pki
-                type: DirectoryOrCreate
-                name: k8s-certs
-            - hostPath:
-                path: /etc/kubernetes/controller-manager.conf
-                type: FileOrCreate
-                name: kubeconfig
-            - hostPath:
-                path: /usr/local/share/ca-certificates
-                type: DirectoryOrCreate
-                name: usr-local-share-ca-certificates
-            - hostPath:
-                path: /usr/share/ca-certificates
-                type: DirectoryOrCreate
-                name: usr-share-ca-certificates
-            - hostpath:
-                path: /var/lib/calico
-                type: DirectoryOrCreate
-                name: calicolib
-            - hostpath:
-                path: /var/run/calico
-                type: DirectoryOrCreate
-                name: calicorun
-          status: {}
-
-
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubeadm init --apiserver-advertise-address='{{ kuburnetes_master }}'  --node-name node-master --pod-network-cidr=192.168.0.0/16  --control-plane-endpoint="node-master:6443"     --ignore-preflight-errors=NumCPU | tail -n 2 | tee /home/ubuntu/run_to_connect_node.sh"
@@ -287,9 +152,8 @@
             name: pool1
           spec:
             cidr: 192.168.0.0/16
-            ipipMode: Never
+            ipipMode: CrossSubnet
             natOutgoing: true
-            disabled: false
             nodeSelector: all()
 
     - name: Creates directory

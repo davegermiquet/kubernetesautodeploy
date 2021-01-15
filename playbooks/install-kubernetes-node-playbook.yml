@@ -5,62 +5,47 @@
 
   tasks:
     - name: Install required system packages
-      apt:
-        pkg:
-          - apt-transport-https
-          - ca-certificates
-          - software-properties-common
-          - curl
-          - python3-setuptools
+      yum:
+        name:
+          - docker 
+          - docker-client
+          - docker-client-latest
+          - docker-common
+          - docker-latest
+          - docker-latest-logrotate
+          - docker-logrotate
+          - docker-engine
+        state: removed
+    - name: Install required system packages
+      yum:
+        name:
+          - yum-utils
+          - python3
           - python3-pip
-          - rsync
-        update_cache: yes
+        state: installed
 
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-        validate_certs: no
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
+    - name: Add repository
+      yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl:  https://download.docker.com/linux/centos/docker-ce.repo
 
+    - name: Add repository
+      yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 
-    - name: Add kubernetes GPG apt Key
-      apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
-        validate_certs: no
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
-
-    - name: Add specified repository into sources list
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
-        state: present
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
-
-    - name: Add specified repository into sources list
-      apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
-        state: present
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
-
-    - name: Update apt and install docker-ce
-      apt:
-        pkg:
+    - name: Install required system packages
+      yum:
+        name:
           - docker-ce
-          - docker-ce-cli
+          - docker-ce-cli 
           - containerd.io
           - kubelet
           - kubeadm
           - kubectl
-        update_cache: yes
+        state: installed
 
     -  name: Install Docker Module for Python
        pip:
@@ -130,6 +115,12 @@
         daemon_reload: yes
         name: containerd
 
+    - name: Enable service kubelet and ensure it is not masked
+      systemd:
+        name: kubelet
+        enabled: yes
+        masked: no
+
     - name: change permissions for run_to_connect
       file:
         path: /home/ubuntu/run_to_connect_node.sh
@@ -187,3 +178,7 @@
       systemd:
         state: started
         name: rc-local
+   - name: Make sure a service is running
+      systemd:
+        state: started
+        state: restarted
