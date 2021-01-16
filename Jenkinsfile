@@ -11,8 +11,13 @@ pipeline {
     // Paramterize the variable options for deployment
         parameters {
           choice(name: 'TASK', choices: ['apply','destroy'], description: 'deploy/destroy')
-          string(name: 'AWS_FIRST_REGION', defaultValue: 'us-east-1', description: 'First Region to Deploy')
+          string(name:" 'BUCKET', defaultValue : '',description: 'This is the S3 bucket Stateforms are saved please create on amazon')
+          string(name: 'AWS_FIRST_REGION', defaultValue: 'us-east-1', description: 'First Region to Deploy for ec2 and s3 bucket')
           string(name: 'AWS_SECOND_REGION', defaultValue: 'us-west-1', description: 'Second Region to Deploy')
+          string(name: 'DOMAIN', defaultValue:'',desription: 'Domain for the kubernetes cluster(will create Route 53)')
+          string(name: 'VPC_RANGE',defaultValue: '192.168.0.0/16',description 'IP RANGE For VPC Created')
+          string(name: 'IP_PUBILC_RANGE',defaultValue: '192.168.10.0/24',description 'IP RANGE For Public Subnet')
+          string(name: 'IP_PRIVATE_RANGE',defaultValue: '192.168.9.0/24',description 'IP RANGE For Public Subnet')
        }
 
     stages {
