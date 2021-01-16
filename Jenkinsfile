@@ -17,7 +17,9 @@ pipeline {
           string(name: 'DOMAIN', defaultValue:'',desription: 'Domain for the kubernetes cluster(will create Route 53)')
           string(name: 'VPC_RANGE',defaultValue: '192.168.0.0/16',description 'IP RANGE For VPC Created')
           string(name: 'IP_PUBILC_RANGE',defaultValue: '192.168.10.0/24',description 'IP RANGE For Public Subnet')
-          string(name: 'IP_PRIVATE_RANGE',defaultValue: '192.168.9.0/24',description 'IP RANGE For Public Subnet')
+          string(name: 'IP_PRIVATE_RANGE',defaultValue: '192.168.9.0/24',description 'IP RANGE For Prviate Subnet')
+          string(name: 'TYPE_EC2_INSTANCE',defaultValue: 't2.medium',descrition: 'EC2 Server Type')
+          string(name: 'NODE_AMOUNT',defaultValue: '2',description 'Amount of Nodes Deployed')
        }
 
     stages {
@@ -28,9 +30,8 @@ pipeline {
                     sh "cd terraform;terraform init  -input=false"
                     sh "cd terraform;terraform ${TASK} -input=false -auto-approve"
                     script {
-                        server_deployed = sh ( script: 'cd terraform;terraform output kuber_master_aws_instance_public_ip | sed "s/\\\"//g"', returnStdout: true).trim()
-                        private_ip_deployed = sh ( script: 'cd terraform;terraform output kuber_master_aws_instance_private_ip | sed "s/\\\"//g"', returnStdout: true).trim()
-                        node_one = sh ( script: 'cd terraform;terraform output kuber_node_aws_instance_private_ip | sed "s/\\\"//g"', returnStdout: true).trim()
+                        server_deployed = sh ( script: 'cd terraform;terraform output KUBE_MASTER_PUBLIC_IP | sed "s/\\\"//g"', returnStdout: true).trim()
+                        private_ip_deployed = sh ( script: 'cd terraform;terraform output KUBE_MASTER_PRIVATE_IP | sed "s/\\\"//g"', returnStdout: true).trim()
                     }
                  }
               }
