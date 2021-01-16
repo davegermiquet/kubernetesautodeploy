@@ -9,7 +9,7 @@
         path: /etc/yum.conf
         insertafter: '^[main]'
         line: |
-          proxy={{ http_ansible_proxy }}
+          proxy='{{ http_ansible_proxy }}'
 
     - name: Install required system packages
       yum:
@@ -60,21 +60,21 @@
         name: docker-repo
         description: EPEL YUM repo
         baseurl:  https://download.docker.com/linux/centos/7/x86_64/stable/
-        proxy: {{ http_ansible_proxy }}
+        proxy: '{{ http_ansible_proxy }}'
 
     - name: Add repository
       yum_repository:
         name: kubernetes
         description: kuberenetes
         baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-        proxy: {{ http_ansible_proxy }}
+        proxy: '{{ http_ansible_proxy }}'
 
     - name: Add repository
       yum_repository:
         name: selinux
         description: selinux
         baseurl: http://mirror.centos.org/centos/7/extras/x86_64/
-        proxy: {{ http_ansible_proxy }}
+        proxy: '{{ http_ansible_proxy }}'
 
     - name: Install required system packages
       yum:
@@ -143,7 +143,7 @@
       systemd:
         daemon_reload: yes
 
-    - name: Restart docker
+    - name: {Restart} docker
       systemd:
         state: restarted
         daemon_reload: yes
