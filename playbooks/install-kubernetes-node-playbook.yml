@@ -174,8 +174,23 @@
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  sh -c "sudo /home/ec2-user/run_to_connect_node.sh"
-        creates: /etc/rc.local
+        creates: /tmp/kinstalled
 
+    - name: Importing Schema for Calico
+      command:
+        cmd: sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl create -f https://docs.projectcalico.org/manifests/crds.yaml"
+        creates: /tmp/kinstalled
+
+    - name: Enabling the scheduling of Master for Kubernetes
+      command:
+        cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl taint nodes --all node-role.kubernetes.io/master-"
+        creates: /tmp/kinstalled
+
+    - name: etc/rc.local
+      copy:
+        dest: "/tmp/kinstalled"
+        content: ""
+        mode: 0755
 
     - name: backup the manifests folder
       copy:
