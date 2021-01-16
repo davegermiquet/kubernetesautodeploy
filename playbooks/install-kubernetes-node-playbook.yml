@@ -81,7 +81,7 @@
       yum:
         name:
           - docker-ce
-          - docker-ce-cli 
+          - docker-ce-cli
           - containerd.io
           - kubelet
           - kubeadm
@@ -164,17 +164,6 @@
         state: restarted
         daemon_reload: yes
         name: containerd
-
-    - name: Enable service kubelet and ensure it is not masked
-      systemd:
-        name: kubelet
-        enabled: yes
-        masked: no
-
-    - name: Make sure a service is running
-      systemd:
-        name: kubelet
-        state: restarted
 
     - name: change permissions for run_to_connect
       file:
