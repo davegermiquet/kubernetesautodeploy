@@ -67,6 +67,8 @@
               - list
               - watch
               - update
+              - create
+
             # Calico must create and update some CRDs on startup.
           - apiGroups: ["crd.projectcalico.org"]
             resources:
@@ -96,6 +98,7 @@
             verbs:
               - watch
               - update
+              - create
         dest: /tmp/roleaccountcalico
         force: no
         group: root
