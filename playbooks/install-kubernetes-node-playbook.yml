@@ -90,6 +90,7 @@
     -  name: Install Docker Module for Python
        pip:
          name: docker
+         executable: pip-3
        environment:
          http_proxy: '{{ http_ansible_proxy }}'
          https_proxy: '{{ http_ansible_proxy }}'
@@ -97,6 +98,7 @@
     - name: Install AWS CLI
       pip:
         name: awscli
+        executable: pip-3
       environment:
         http_proxy: '{{ http_ansible_proxy }}'
         https_proxy: '{{ http_ansible_proxy }}'
