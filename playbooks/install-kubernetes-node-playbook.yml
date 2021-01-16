@@ -9,7 +9,7 @@
         path: /etc/yum.conf
         insertafter: '^[main]'
         line: |
-          proxy='{{ http_ansible_proxy }}'
+          proxy={{ http_ansible_proxy }}
 
     - name: Install required system packages
       yum:
