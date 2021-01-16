@@ -80,10 +80,12 @@
     -  name: Install Docker Module for Python
        pip:
          name: docker
+         executable: pip-3
 
     - name: Install AWS CLI
       pip:
         name: awscli
+        executable: pip-3
 
 
     - name: Configure containerd
