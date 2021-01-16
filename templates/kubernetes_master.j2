@@ -351,6 +351,12 @@ resource "aws_instance" "kuber_master_ec2_instance" {
   }
 }
 
+output "KEY_NAME_DEPLOYER" {
+
+     value = aws_key_pair.deployer.key_name
+
+}
+
 output "KUBE_MASTER_PRIVATE_IP" {
     value = aws_instance.kuber_master_ec2_instance.private_ip
 }

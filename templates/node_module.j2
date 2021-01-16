@@ -1,0 +1,19 @@
+module "kuber_node" {
+resource "aws_instance" "kuber_node_ec2_instance" {
+  ami  = "ami-000db10762d0c4c05"
+  instance_type = "t2.medium"
+  subnet_id = aws_subnet.kubernetes_private_subnet.id
+  iam_instance_profile = aws_iam_instance_profile.kubernetes_iam_aws_instance.name
+  vpc_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_slave.id,aws_security_group.allow_squid.id,aws_security_group.allow_api.id]
+  key_name = aws_key_pair.deployer.key_name
+  source_dest_check = false
+  root_block_device {
+      volume_size = 16
+  }
+
+  tags = {
+    Name        = "kubernetes_deploy"
+      }
+  }
+}
+
