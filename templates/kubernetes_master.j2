@@ -16,7 +16,7 @@ terraform {
 
 provider "aws" {
   profile = "default"
-  region  = "{{ BUCKET }}"
+  region  = "{{ AWS_FIRST_REGION  }}"
 }
 
 
@@ -340,8 +340,8 @@ local {
 global_security_group_ids = [aws_security_group.allow_ssh.id,aws_security_group.kubernetes_default_sg.id,aws_security_group.allow_kubernetes_master.id,aws_security_group.allow_squid.id,aws_security_group.allow_api.id]
 }
 resource "aws_instance" "kuber_master_ec2_instance" {
-  ami =  "ami-000db10762d0c4c05"
-  instance_type = "{{TYPE_EC2_INSTANCE}}"
+  ami =  " {{ RED_HAT_IMAGE_AMI }}"
+  instance_type = "{{ TYPE_EC2_INSTANCE }}"
   iam_instance_profile = aws_iam_instance_profile.kubernetes_iam_aws_instance.name
   subnet_id = aws_subnet.kubernetes_public_subnet.id
   vpc_security_group_ids = local.global_security_group_ids
@@ -358,13 +358,16 @@ output "KEY_NAME_DEPLOYER" {
      value = aws_key_pair.deployer.key_name
 }
 
-output "SECURITY_GROUP_GLOBL" {
+output "SECURITY_GROUP_GLOBAL" {
     value =  local.global_security_group_ids
+}
+
+output "PRIVATE_SUBNET" {
+    value =   aws_subnet.kubernetes_private_subnet.id
 }
 output "KUBE_MASTER_PRIVATE_IP" {
     value = aws_instance.kuber_master_ec2_instance.private_ip
 }
-
 
 output "KUBE_MASTER_PUBLIC_IP" {
     value = aws_instance.kuber_master_ec2_instance.public_ip
