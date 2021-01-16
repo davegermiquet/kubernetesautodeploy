@@ -87,7 +87,7 @@ ssh -l ec2-user -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runn
 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${PRIVATE_NODE_IP}:22 ec2-user@${SERVER_DEPLOYED} /tmp/autoscript.sh &
                 sleep 5
 scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ec2-user@localhost:/home/ec2-user/.ssh/id_rsa
-ssh -o "port=2222" -o "StrictHostKeyChecking=no" ec2-user@localhost sudo service ssh restart
+ssh -o "port=2222" -o "StrictHostKeyChecking=no" ec2-user@localhost sudo service sshd restart
                 echo "for NODE Installation"
 scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ec2-user@localhost:/tmp/testfile
                 ssh -o "port=2222" -o "StrictHostKeyChecking no" ec2-user@localhost sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
