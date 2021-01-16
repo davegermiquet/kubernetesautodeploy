@@ -23,6 +23,7 @@
           - docker-logrotate
           - docker-engine
         state: removed
+
     - name: Install required system packages
       yum:
         name:
@@ -127,6 +128,7 @@
           Environment="HTTPS_PROXY={{ http_ansible_proxy }}"
           Environment="NO_PROXY=localhost,127.0.0.1"
 
+
     - name: Creating a file with content
       copy:
         dest: "/etc/systemd/system/rc-local.service"
@@ -144,6 +146,11 @@
     - name: Just force systemd to reread configs (2.4 and above)
       systemd:
         daemon_reload: yes
+
+    - name: enable docker
+      systemd:
+        enabled: yes
+        masked: no
 
     - name: Restart docker
       systemd:

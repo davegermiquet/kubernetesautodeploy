@@ -110,6 +110,11 @@
 
     - name: Restart docker
       systemd:
+        enabled: yes
+        masked: no
+
+    - name: Restart docker
+      systemd:
         state: restarted
         daemon_reload: yes
         name: docker
