@@ -88,9 +88,6 @@ ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${PRIVATE_NODE_IP}:22 ec2-user@${SE
                 sleep 5
 scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ec2-user@localhost:/home/ec2-user/.ssh/id_rsa
 ssh -o "port=2222" -o "StrictHostKeyChecking=no" ec2-user@localhost sudo service sshd restart
-                echo "for NODE Installation"
-scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ec2-user@localhost:/tmp/testfile
-                ssh -o "port=2222" -o "StrictHostKeyChecking no" ec2-user@localhost sudo cp /tmp/testfile /etc/apt/apt.conf.d/proxy
               '''
                 }
               }
@@ -102,7 +99,6 @@ scp -o "port=2222" -o "StrictHostKeyChecking=no" /tmp/testfile ec2-user@localhos
                     PRIVATE_NODE_IP="${node_one}"
                     CMD_TO_RUN="${cmd_to_join}"
                     TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
-                    MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
                     HTTP_PROXY="http://${private_ip_deployed}:3128"
               }
               when {  expression { params.TASK == 'apply' } }
@@ -122,8 +118,7 @@ ssh -o "StrictHostKeyChecking=no" ec2-user${SERVER_DEPLOYED} scp -o "StrictHostK
                  PRIVATE_NODE_IP="${node_one}"
                  CMD_TO_RUN="${cmd_to_join}"
                  TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
-                MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
-                HTTP_PROXY="http://${private_ip_deployed}:3128"
+                 HTTP_PROXY="http://${private_ip_deployed}:3128"
               }
               when {  expression { params.TASK == 'apply' } }
               steps {
@@ -140,7 +135,6 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user 
               PRIVATE_NODE_IP="${node_one}"
               CMD_TO_RUN="${cmd_to_join}"
               TF_VAR_SSH_PUB = readFile "/var/jenkins_home/.ssh/id_rsa.pub"
-              MAKEPROXY="Acquire::http::Proxy \"http://${private_ip_deployed}:3128\";\nAcquire::https::${private_ip_deployed}:3128 \"DIRECT\";"
               HTTP_PROXY="http://${private_ip_deployed}:3128"
               }
               when {  expression { params.TASK == 'apply' } }
