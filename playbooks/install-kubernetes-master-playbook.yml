@@ -134,6 +134,16 @@
           [Install]
           WantedBy=multi-user.target
 
+    - name: Enable service kubelet and ensure it is not masked
+      systemd:
+        name: kubelet
+        enabled: yes
+        masked: no
+
+    - name: Make sure a service is running
+      systemd:
+        name: kubelet
+        state: restarted
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubeadm init --apiserver-advertise-address='{{ kuburnetes_master }}'  --node-name node-master --pod-network-cidr=192.168.0.0/16  --control-plane-endpoint="node-master:6443"     --ignore-preflight-errors=NumCPU | tail -n 2 | tee /home/ec2-user/run_to_connect_node.sh"

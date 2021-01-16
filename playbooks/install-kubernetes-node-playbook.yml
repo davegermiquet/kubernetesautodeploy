@@ -121,6 +121,11 @@
         enabled: yes
         masked: no
 
+    - name: Make sure a service is running
+      systemd:
+        name: kubelet
+        state: restarted
+
     - name: change permissions for run_to_connect
       file:
         path: /home/ec2-user/run_to_connect_node.sh
@@ -178,7 +183,3 @@
       systemd:
         state: started
         name: rc-local
-   - name: Make sure a service is running
-      systemd:
-        state: started
-        state: restarted
