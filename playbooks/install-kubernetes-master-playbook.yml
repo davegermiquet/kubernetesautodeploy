@@ -137,17 +137,23 @@
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
         cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubeadm init --apiserver-advertise-address='{{ kuburnetes_master }}'  --node-name node-master --pod-network-cidr=192.168.0.0/16  --control-plane-endpoint="node-master:6443"     --ignore-preflight-errors=NumCPU | tail -n 2 | tee /home/ec2-user/run_to_connect_node.sh"
-        creates: /etc/rc.local
+        creates: /tmp/kinstalled
 
     - name: Importing Schema for Calico
       command:
-        cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl create -f https://docs.projectcalico.org/manifests/crds.yaml"
-        creates: /etc/rc.local
+        cmd: sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl create -f https://docs.projectcalico.org/manifests/crds.yaml"
+        creates: /tmp/kinstalled
 
     - name: Enabling the scheduling of Master for Kubernetes
       command:
         cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubectl taint nodes --all node-role.kubernetes.io/master-"
-        creates: /etc/rc.local
+        creates: /tmp/kinstalled
+
+    - name: etc/rc.local
+      copy:
+        dest: "/tmp/kinstalled"
+        content: ""
+        mode: 0755
 
     - name: etc/rc.local
       copy:
