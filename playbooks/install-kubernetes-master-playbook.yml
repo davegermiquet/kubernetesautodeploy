@@ -110,6 +110,7 @@
 
     - name: Restart docker
       systemd:
+        name: docker
         enabled: yes
         masked: no
 
