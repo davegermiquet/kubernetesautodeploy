@@ -13,8 +13,8 @@ Severs Deployed:
 
 - 2 EC2 Instances
 - Squid
-- Kubernetes Master
-- Kubernetes Node
+- Kubernetes Master (RHES7)
+- Kubernetes Node   (RHES7)
 - VPC Network With only specific ports open for kubernetes
 - A Private and Public Network
 - Node On Private Network no access to outside world except through squid
