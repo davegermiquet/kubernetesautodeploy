@@ -121,12 +121,12 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user 
                 PRIVATE_SUBNET="${PRIVATE_SUBNET}"
                 IAM_INSTANCE_PROFILE="${IAM_INSTANCE_PROFILE}"
              }
+              when {  expression { params.TASK == 'apply' } }
               steps {
                     sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "target=127.0.0.1" ${WORKSPACE}/playbooks/create_terraform_node.yml'
                 }
         }
         stage('Create infrastructure for node') {
-              when {  expression { params.TASK == 'apply' } }
               steps {
                     withCredentials([usernamePassword(credentialsId: 'AMAZON_CRED', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh "cd terraform_node;terraform init  -input=false"
