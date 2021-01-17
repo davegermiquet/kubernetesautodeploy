@@ -5,35 +5,12 @@
 
   tasks:
     - name: Install required system packages
-      apt:
-        pkg:
-          - apt-transport-https
-          - ca-certificates
-          - software-properties-common
+      yum:
+        name:
+          - avahi
+          - python3-pip
           - curl
-          - python3-setuptools
           - squid
-          - avahi-daemon
-          - apache2
-
-
-    - name: Create a symbolic link
-      file:
-        path: /var/www/html/ubuntu
-        owner: www-data
-        group: www-data
-        state: directory
-
-    - name: Change file ownership, group and permissions
-      file:
-        path: /var/www/html/
-        owner: www-data
-        group: www-data
-        recurse: yes
-        mode: '0770'
-
-    - name: Update packages list
-      apt: update_cache=yes
 
     - name: Explicitly specifying named matched groups
       replace:

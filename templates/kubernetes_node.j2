@@ -1,0 +1,46 @@
+terraform {
+
+  backend "s3" {
+    bucket = "{{ BUCKET }}"
+    key    = "node"
+    region = "{{ AWS_FIRST_REGION }}"
+}
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 2.70"
+    }
+  }
+}
+
+provider "aws" {
+  profile = "default"
+  region  = "{{ AWS_FIRST_REGION  }}"
+}
+
+
+{% for NODE_NUMBER in range(NODE_AMOUNT|int) %}
+
+resource "aws_instance" "kuber_node_ec2_instance_{{ NODE_NUMBER }}" {
+  ami  = "{{ RED_HAT_IMAGE_AMI }}"
+  instance_type = "{{ TYPE_EC2_INSTANCE }}"
+  subnet_id =  "{{ PRIVATE_SUBNET }}"
+  iam_instance_profile = "{{ IAM_INSTANCE_PROFILE }}"
+  vpc_security_group_ids =  {{ SECURITY_GROUP_GLOBAL | replace("'", "\"") }}
+  key_name = "{{ KEY_NAME_DEPLOYER }}"
+  source_dest_check = false
+  root_block_device {
+      volume_size = {{ HARD_DISK_SIZE }}
+  }
+
+  tags = {
+    Name        = "kubernetes_deploy"
+      }
+  }
+
+output "KUBE_NODE_PRIVATE_IP_{{ NODE_NUMBER }}" {
+    value = aws_instance.kuber_node_ec2_instance_{{ NODE_NUMBER }}.private_ip
+}
+
+{% endfor %}

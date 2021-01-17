@@ -4,67 +4,94 @@
   become: true
 
   tasks:
+    - name: setup proxy in docker
+      lineinfile:
+        path: /etc/yum.conf
+        insertafter: '^[main]'
+        line: |
+          proxy={{ http_ansible_proxy }}
+
     - name: Install required system packages
-      apt:
-        pkg:
-          - apt-transport-https
-          - ca-certificates
-          - software-properties-common
-          - curl
-          - python3-setuptools
+      yum:
+        name:
+          - docker 
+          - docker-client
+          - docker-client-latest
+          - docker-common
+          - docker-latest
+          - docker-latest-logrotate
+          - docker-logrotate
+          - docker-engine
+        state: removed
+
+    - name: Install required system packages
+      yum:
+        name:
+          - yum-utils
+          - python3
           - python3-pip
-          - rsync
-        update_cache: yes
+        state: installed
 
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-        validate_certs: no
+    - name: Verify the key, using a fingerprint, before import
+      rpm_key:
+          key: https://www.centos.org/keys/RPM-GPG-KEY-CentOS-7
+          fingerprint: 6341 AB27 53D7 8A78 A7C2 7BB1 24C6 A8A7 F4A8 0EB5
+      environment:
+        http_proxy: '{{ http_ansible_proxy }}'
+        https_proxy: '{{ http_ansible_proxy }}'
+
+    - name: Verify the key, using a fingerprint, before import
+      rpm_key:
+          key: https://download.docker.com/linux/centos/gpg
+          fingerprint: 060A 61C5 1B55 8A7F 742B 77AA C52F EB6B 621E 9F35
+      environment:
+        http_proxy: '{{ http_ansible_proxy }}'
+        https_proxy: '{{ http_ansible_proxy }}'
+
+    - name: Verify the key, using a fingerprint, before import
+      rpm_key:
+          key: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
       environment:
         http_proxy: '{{ http_ansible_proxy }}'
         https_proxy: '{{ http_ansible_proxy }}'
 
 
-    - name: Add kubernetes GPG apt Key
-      apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
-        validate_certs: no
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
+    - name: Add repository
+      yum_repository:
+        name: docker-repo
+        description: EPEL YUM repo
+        baseurl:  https://download.docker.com/linux/centos/7/x86_64/stable/
+        proxy: '{{ http_ansible_proxy }}'
 
-    - name: Add specified repository into sources list
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
-        state: present
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
+    - name: Add repository
+      yum_repository:
+        name: kubernetes
+        description: kuberenetes
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        proxy: '{{ http_ansible_proxy }}'
 
-    - name: Add specified repository into sources list
-      apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
-        state: present
-      environment:
-        http_proxy: '{{ http_ansible_proxy }}'
-        https_proxy: '{{ http_ansible_proxy }}'
+    - name: Add repository
+      yum_repository:
+        name: selinux
+        description: selinux
+        baseurl: http://mirror.centos.org/centos/7/extras/x86_64/
+        proxy: '{{ http_ansible_proxy }}'
 
-    - name: Update apt and install docker-ce
-      apt:
-        pkg:
+    - name: Install required system packages
+      yum:
+        name:
           - docker-ce
           - docker-ce-cli
           - containerd.io
           - kubelet
           - kubeadm
           - kubectl
-        update_cache: yes
+        state: installed
 
     -  name: Install Docker Module for Python
        pip:
          name: docker
+         executable: pip-3
        environment:
          http_proxy: '{{ http_ansible_proxy }}'
          https_proxy: '{{ http_ansible_proxy }}'
@@ -72,6 +99,7 @@
     - name: Install AWS CLI
       pip:
         name: awscli
+        executable: pip-3
       environment:
         http_proxy: '{{ http_ansible_proxy }}'
         https_proxy: '{{ http_ansible_proxy }}'
@@ -91,7 +119,7 @@
         regexp: ^ExecStart.*
         replace: 'ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=systemd -H fd:// --containerd=/run/containerd/containerd.sock'
 
-    - name: Ensure the default Apache port is 8080
+    - name: setup proxy in docker
       lineinfile:
         path: /lib/systemd/system/docker.service
         insertafter: '^[Service]'
@@ -99,6 +127,7 @@
           Environment="HTTP_PROXY={{ http_ansible_proxy }}"
           Environment="HTTPS_PROXY={{ http_ansible_proxy }}"
           Environment="NO_PROXY=localhost,127.0.0.1"
+
 
     - name: Creating a file with content
       copy:
@@ -118,6 +147,12 @@
       systemd:
         daemon_reload: yes
 
+    - name: enable docker
+      systemd:
+        name: docker
+        enabled: yes
+        masked: no
+
     - name: Restart docker
       systemd:
         state: restarted
@@ -132,15 +167,20 @@
 
     - name: change permissions for run_to_connect
       file:
-        path: /home/ubuntu/run_to_connect_node.sh
+        path: /home/ec2-user/run_to_connect_node.sh
         state: touch
         mode: "u+rwx,g+rx,o+rx"
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  sh -c "sudo /home/ubuntu/run_to_connect_node.sh"
-        creates: /etc/rc.local
+        cmd:  sh -c "sudo /home/ec2-user/run_to_connect_node.sh"
+        creates: /tmp/kinstalled
 
+    - name: etc/rc.local
+      copy:
+        dest: "/tmp/kinstalled"
+        content: ""
+        mode: 0755
 
     - name: backup the manifests folder
       copy:
