@@ -1,4 +1,4 @@
 while [[ -f /tmp/runningssh ]] 
 do 
- sleep 15 
+ sleep 3 
  done  

@@ -170,7 +170,7 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user 
                                 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
                                  echo "closing connection for this host"
                                  ssh -o "StrictHostKeyChecking=no" ec2-user@${SERVER_DEPLOYED} rm /tmp/runningssh
-                                 sleep 5
+                                 sleep 7
 '''
                         }
                  }
