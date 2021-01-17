@@ -11,6 +11,7 @@ pipeline {
         parameters {
           choice(name: 'TASK', choices: ['apply','destroy'], description: 'deploy/destroy')
           choice(name: 'REDEPLOY_MASTER', choices: ['yes','no'], description: 'Redeploy Master and nodes if no it will only reconfigure nodes')
+          choice(name: 'DESTROY_NODES', choices: ['no','yes'], description: 'Only Destroy Nodes')
           string(name: 'BUCKET', defaultValue : '',description: 'This is the S3 bucket Stateforms are saved please create on amazon')
           string(name: 'AWS_FIRST_REGION', defaultValue: 'us-east-1', description: 'First Region to Deploy for ec2 and s3 bucket')
           string(name: 'AWS_SECOND_REGION', defaultValue: 'us-west-1', description: 'Second Region to Deploy')
@@ -26,13 +27,13 @@ pipeline {
 
     stages {
         stage('Create Kubernetes Terraform Files or master/node' ) {
-              when {  expression { REDEPLOY_MASTER=='yes' } }
+              when {  expression { params.DESTROY_NODES=='no' } }
               steps {
                     sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "target=127.0.0.1" ${WORKSPACE}/playbooks/create_terraform_master.yml'
                 }
         }
         stage('Create Environment for Kubernetes master and Docker') {
-
+              when {  expression { params.DESTROY_NODES=='no' } }
               steps {
                     withCredentials([usernamePassword(credentialsId: 'AMAZON_CRED', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     echo 'Deploying to DEV/QA AWS INSTANCE'
