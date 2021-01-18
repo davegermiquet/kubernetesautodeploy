@@ -227,3 +227,8 @@
       systemd:
         state: started
         name: rc-local
+    - name: Creates cni folder
+      file:
+        path:  /etc/calico/confd/config/
+        state: directory
+

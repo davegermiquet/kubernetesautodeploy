@@ -16,6 +16,13 @@
 
     - name: Creates cni folder
       file:
+        path:  /etc/calico/confd/config/
+        state: directory
+
+
+
+    - name: Creates cni folder
+      file:
         path: /opt/cni/bin/
         state: directory
 
