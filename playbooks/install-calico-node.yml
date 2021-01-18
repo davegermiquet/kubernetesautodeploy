@@ -237,6 +237,8 @@
                       - name: FELIX_TYPHACAFILE
                         value: /etc/kubernetes/pki/typhaca.crt
                  # Common name on the Typha cificate; used to verify we are talking to an authentic typha
+                      - name: FELIX_LOGSEVERITYSYS
+                        value: "none"
                       - name: FELIX_TYPHACN
                         value: calico-typha
                   # Location of the client certificate for connecting to Typha; volume mount
