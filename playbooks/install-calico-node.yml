@@ -269,7 +269,10 @@
                       periodSeconds: 10
 
                     volumeMounts:
-                      - mountPath: /etc/calico/
+                      - mountPath: /var/run/bird
+                        name: runbird
+                        readOnly: false
+                      - mountPath: /etc/calico
                         name: calico
                         readOnly: false
                       - mountPath: /lib/modules
@@ -289,6 +292,11 @@
                       - mountPath: /etc/kubernetes
                         name: ssl1
                 volumes:
+                  - name: runbird
+                    hostPath:
+                      path:/var/run/bird
+                      type: Directory
+
                   - name: ssl1
                     hostPath:
                       path: /etc/kubernetes

@@ -11,8 +11,9 @@
           metadata:
             name: default
           spec:
-            ipipEnabled: Always
-            logSeverityScreen: Info
+            ipipEnabled: true
+            routeSource: "CalicoIPAM"
+            logSeverityScreen: none
             reportingInterval: 0s
         dest: /tmp/felixconfig
         force: no
