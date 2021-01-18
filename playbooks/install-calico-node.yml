@@ -62,6 +62,7 @@
               - hostendpoints
               - blockaffinities
               - networksets
+              = ipamconfigs
             verbs:
               - get
               - list
@@ -75,6 +76,7 @@
               - ippools
               - felixconfigurations
               - clusterinformations
+              - ipamconfigs
             verbs:
               - create
               - update
@@ -271,6 +273,9 @@
                         name: ssl1
                 volumes:
                   - name: ssl1
+                    hostPath:
+                      path: /etc/kubernetes
+                      type: Directory
                     hostPath:
                       path: /etc/kubernetes
                       type: Directory

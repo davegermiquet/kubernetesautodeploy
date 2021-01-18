@@ -65,6 +65,7 @@
                 - hostendpoints
                 - blockaffinities
                 - networksets
+                - ipamconfigs
               verbs:
                 - get
                 - list
@@ -72,6 +73,7 @@
             - apiGroups: ["crd.projectcalico.org"]
               resources:
                 - clusterinformations
+                - ipamconfigs
               verbs:
                 - get
                 - create
