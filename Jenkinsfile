@@ -170,6 +170,8 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user 
 
                                  errorCode=0; while [ $errorCode -eq 0 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :
 
+                                 sleep 1
+
                                  ssh -l ec2-user -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
                                  ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ec2-user@${SERVER_DEPLOYED} /tmp/autoscript.sh &
                                  errorCode=1; while [ $errorCode -eq 1 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :
