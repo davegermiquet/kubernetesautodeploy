@@ -276,9 +276,6 @@
                     hostPath:
                       path: /etc/kubernetes
                       type: Directory
-                    hostPath:
-                      path: /etc/kubernetes
-                      type: Directory
                 # Used by calico-node.
                   - name: lib-modules
                     hostPath:
