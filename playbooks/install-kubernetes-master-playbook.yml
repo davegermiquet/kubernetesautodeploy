@@ -206,7 +206,7 @@
             name: pool1
           spec:
             cidr: 192.168.0.0/16
-            ipipMode: true
+            ipipMode: Always
             natOutgoing: true
             nodeSelector: all()
 

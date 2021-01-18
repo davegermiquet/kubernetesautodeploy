@@ -11,7 +11,7 @@
           metadata:
             name: default
           spec:
-            ipipEnabled: true
+            ipipEnabled: Always
             logSeverityScreen: Info
             reportingInterval: 0s
         dest: /tmp/felixconfig
