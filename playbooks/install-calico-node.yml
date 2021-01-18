@@ -255,6 +255,9 @@
                       periodSeconds: 10
 
                     volumeMounts:
+                      - mountPath: /etc/calico/
+                        name: calico
+                        readOnly: false
                       - mountPath: /lib/modules
                         name: lib-modules
                         readOnly: true
@@ -275,6 +278,10 @@
                   - name: ssl1
                     hostPath:
                       path: /etc/kubernetes
+                      type: Directory
+                  - name: calico
+                    hostPath:
+                      path: /etc/calico
                       type: Directory
                 # Used by calico-node.
                   - name: lib-modules
