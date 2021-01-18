@@ -62,7 +62,7 @@
               - hostendpoints
               - blockaffinities
               - networksets
-              = ipamconfigs
+              - ipamconfigs
             verbs:
               - get
               - list
