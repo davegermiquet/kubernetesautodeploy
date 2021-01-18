@@ -11,6 +11,11 @@
 
     - name: Creates cni folder
       file:
+        path:  /etc/calico/
+        state: directory
+
+    - name: Creates cni folder
+      file:
         path: /opt/cni/bin/
         state: directory
 
