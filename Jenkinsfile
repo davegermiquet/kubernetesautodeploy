@@ -166,7 +166,8 @@ scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ${USER_AWS}@${S
 ssh -l ${USER_AWS} -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ${USER_AWS}@${SERVER_DEPLOYED} /tmp/autoscript.sh &
 errorCode=1; while [ $errorCode -eq 1 ];do  nc -z localhost 2222; errorCode=$? ;  sleep 2;done || :
-sleep 2
+
+sleep 5
 
 
 scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ${USER_AWS}@localhost:/home/${USER_AWS}/.ssh/id_rsa
@@ -175,7 +176,7 @@ ssh -o "StrictHostKeyChecking=no" ${USER_AWS}@${SERVER_DEPLOYED} rm /tmp/running
 
 errorCode=0; while [ $errorCode -eq 0 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :
 
-sleep 1
+sleep 5
 
 ssh -l ${USER_AWS} -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ${USER_AWS}@${SERVER_DEPLOYED} /tmp/autoscript.sh &
