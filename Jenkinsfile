@@ -59,7 +59,7 @@
          when { expression { params.TASK == 'apply' && params.REDEPLOY_MASTER == 'yes' } }
          steps  {
               sh  '''
-              errorCode=1; while [ $errorCode -eq 1 ];do  nc -z localhost 2222; errorCode=$? ;  sleep 2;done || :
+              errorCode=1; while [ $errorCode -eq 1 ];do  nc -z ${SERVER_DEPLOYED} 22; errorCode=$? ;  sleep 2;done || :
               sleep 2
               echo "awsserver ansible_port=22 ansible_host=${SERVER_DEPLOYED}" > inventory_hosts
               ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml
