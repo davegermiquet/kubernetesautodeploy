@@ -156,7 +156,6 @@
         src: "{{ workspace }}/etc/kubernetes/run_to_connect_node.sh"
         dest: /etc/kubernetes/run_to_connect_node.sh
         remote_src: yes
-        directory_mode: yes
 
     - name: change permissions for run_to_connect
       file:
