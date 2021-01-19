@@ -185,7 +185,6 @@ ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ${USER_AWS}@${SERV
                                  echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/configure-felix-configure-bgp.yml
                                  echo "closing connection for this host"
 ssh -o "StrictHostKeyChecking=no" ${USER_AWS}@${SERVER_DEPLOYED} rm /tmp/runningssh
                                  errorCode=0; while [ $errorCode -eq 0 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :

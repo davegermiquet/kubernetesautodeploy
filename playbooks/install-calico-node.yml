@@ -295,8 +295,7 @@
                   - name: runbird
                     hostPath:
                       path: /var/run/bird
-                      type: Directory
-
+                      type: DirectoryOrCreate
                   - name: ssl1
                     hostPath:
                       path: /etc/kubernetes
@@ -304,7 +303,7 @@
                   - name: calico
                     hostPath:
                       path: /etc/calico
-                      type: Directory
+                      type: DirectoryOrCreate
                 # Used by calico-node.
                   - name: lib-modules
                     hostPath:
