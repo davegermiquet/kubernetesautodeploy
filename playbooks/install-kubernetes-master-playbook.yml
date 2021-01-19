@@ -51,7 +51,6 @@
         name: kubernetes
         description: kuberenetes
         baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-        exclude: kubelet, kubeadm, kubectl
 
     - name: Install required system packages
       yum:
@@ -62,7 +61,6 @@
           - kubelet
           - kubeadm
           - kubectl
-        disable_excludes: kubelet, kubeadm, kubectl
         update_cache: yes
         state: installed
 
