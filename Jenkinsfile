@@ -163,19 +163,19 @@ sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --u
                                  echo "Setup Bastion Hosts/Squid Server for Node"
 scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ${USER_AWS}@${SERVER_DEPLOYED}:/tmp/autoscript.sh
 scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ${USER_AWS}@${SERVER_DEPLOYED}:/home/${USER_AWS}/.ssh/id_rsa
-ssh -l ${USER_AWS} -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} scp -o port=2222 -o StrictHostKeyChecking=no /var/jenkins_home/.ssh/id_rsa ${USER_AWS}@localhost:/home/${USER_AWS}/.ssh/id_rsa /tmp/runningssh
+ssh -l ${USER_AWS} -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ${USER_AWS}@${SERVER_DEPLOYED} /tmp/autoscript.sh &
-                                 errorCode=1; while [ $errorCode -eq 1 ];do  nc -z localhost 2222; errorCode=$? ;  sleep 2;done || :
-                                 sleep 2
+errorCode=1; while [ $errorCode -eq 1 ];do  nc -z localhost 2222; errorCode=$? ;  sleep 2;done || :
+sleep 2
 
 
 scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ${USER_AWS}@localhost:/home/${USER_AWS}/.ssh/id_rsa
 ssh -o "port=2222" -o "StrictHostKeyChecking=no" ${USER_AWS}@localhost sudo service sshd restart || :
 ssh -o "StrictHostKeyChecking=no" ${USER_AWS}@${SERVER_DEPLOYED} rm /tmp/runningssh
 
-                                 errorCode=0; while [ $errorCode -eq 0 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :
+errorCode=0; while [ $errorCode -eq 0 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :
 
-                                 sleep 1
+sleep 1
 
 ssh -l ${USER_AWS} -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ${USER_AWS}@${SERVER_DEPLOYED} /tmp/autoscript.sh &
