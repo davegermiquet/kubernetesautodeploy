@@ -22,6 +22,7 @@
           string(name: 'TYPE_EC2_INSTANCE',defaultValue: 't2.medium',description: 'EC2 Server Type')
           string(name: 'HARD_DISK_SIZE',defaultValue: '16',description: 'In Gigabytes')
           string(name: 'RED_HAT_IMAGE_AMI',defaultValue: 'ami-096fda3c22c1c990a',description: 'RedHat Deployment Image version 7')
+          string(name: 'USER_AWS',defaultValue: 'ec2-user',description: 'user name to login as')
           string(name: 'NODE_AMOUNT',defaultValue: '2',description: 'Amount of Nodes Deployed')
        }
 
@@ -29,7 +30,7 @@
         stage('Create Kubernetes Terraform Files or master/node' ) {
               when {  expression { params.DESTROY_NODES=='no' } }
               steps {
-                    sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "target=127.0.0.1" ${WORKSPACE}/playbooks/create_terraform_master.yml'
+                    sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "target=127.0.0.1" ${WORKSPACE}/playbooks/create_terraform_master.yml'
                 }
         }
         stage('Create Environment for Kubernetes master and Docker') {
@@ -62,7 +63,7 @@
               errorCode=1; while [ $errorCode -eq 1 ];do  nc -z ${SERVER_DEPLOYED} 22; errorCode=$? ;  sleep 2;done || :
               sleep 2
               echo "awsserver ansible_port=22 ansible_host=${SERVER_DEPLOYED}" > inventory_hosts
-              ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/deploy-squid-playbook.yml
               '''
               }
            }
@@ -77,8 +78,8 @@
                 echo "awsserver ansible_port=22 ansible_host=${SERVER_DEPLOYED}" > inventory_hosts
                 echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
                 mkdir -p etc/kubernetes/
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-kubernetes-master-playbook.yml
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/create-ssl-certs.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user USER_AWS --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-kubernetes-master-playbook.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/create-ssl-certs.yml
               '''
                }
               }
@@ -95,7 +96,7 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user 
               when {  expression { params.TASK == 'apply' &&  params.REDEPLOY_MASTER=='yes' } }
               steps {
               sh '''
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
               '''
                 }
             }
@@ -110,9 +111,9 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user 
               when {  expression { params.TASK == 'apply' && params.REDEPLOY_MASTER=='yes' } }
               steps {
                 sh '''
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-typha-calinco-node.yml
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-calico-node.yml
- ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/configure-felix-configure-bgp.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS}--extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-typha-calinco-node.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=awsserver" ${WORKSPACE}/playbooks/install-calico-node.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/configure-felix-configure-bgp.yml
               '''
                  }
               }
@@ -125,7 +126,7 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user 
              }
               when {  expression { params.TASK == 'apply' } }
               steps {
-                    sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "target=127.0.0.1" ${WORKSPACE}/playbooks/create_terraform_node.yml'
+sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "target=127.0.0.1" ${WORKSPACE}/playbooks/create_terraform_node.yml'
                 }
         }
         stage('Create infrastructure for node') {
@@ -160,33 +161,32 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user 
                       sh '''
 
                                  echo "Setup Bastion Hosts/Squid Server for Node"
-                                 scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ec2-user@${SERVER_DEPLOYED}:/tmp/autoscript.sh
-                                 scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ec2-user@${SERVER_DEPLOYED}:/home/ec2-user/.ssh/id_rsa
-                                 ssh -l ec2-user -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} scp -o port=2222 -o StrictHostKeyChecking=no /var/jenkins_home/.ssh/id_rsa ec2-user@localhost:/home/ec2-user/.ssh/id_rsa /tmp/runningssh
-                                 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ec2-user@${SERVER_DEPLOYED} /tmp/autoscript.sh &
+scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ${USER_AWS} @${SERVER_DEPLOYED}:/tmp/autoscript.sh
+scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ${USER_AWS}@${SERVER_DEPLOYED}:/home/${USER_AWS}/.ssh/id_rsa
+ssh -l ${USER_AWS} -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} scp -o port=2222 -o StrictHostKeyChecking=no /var/jenkins_home/.ssh/id_rsa ${USER_AWS}@localhost:/home/${USER_AWS}/.ssh/id_rsa /tmp/runningssh
+ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ${USER_AWS}@${SERVER_DEPLOYED} /tmp/autoscript.sh &
                                  errorCode=1; while [ $errorCode -eq 1 ];do  nc -z localhost 2222; errorCode=$? ;  sleep 2;done || :
                                  sleep 2
 
 
-                                 scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ec2-user@localhost:/home/ec2-user/.ssh/id_rsa
-                                 ssh -o "port=2222" -o "StrictHostKeyChecking=no" ec2-user@localhost sudo service sshd restart || :
-                                 ssh -o "StrictHostKeyChecking=no" ec2-user@${SERVER_DEPLOYED} rm /tmp/runningssh
+scp -o "port=2222" -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa ${USER_AWS}@localhost:/home/${USER_AWS}/.ssh/id_rsa
+ssh -o "port=2222" -o "StrictHostKeyChecking=no" ${USER_AWS}@localhost sudo service sshd restart || :
+ssh -o "StrictHostKeyChecking=no" ${USER_AWS}@${SERVER_DEPLOYED} rm /tmp/runningssh
 
                                  errorCode=0; while [ $errorCode -eq 0 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :
 
                                  sleep 1
 
-                                 ssh -l ec2-user -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
-                                 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ec2-user@${SERVER_DEPLOYED} /tmp/autoscript.sh &
+ssh -l ${USER_AWS} -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} touch /tmp/runningssh
+ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ${USER_AWS}@${SERVER_DEPLOYED} /tmp/autoscript.sh &
                                  errorCode=1; while [ $errorCode -eq 1 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :
                                  sleep 2
                                  echo "kuber_node_1 ansible_port=2222 ansible_host=localhost" >> inventory_hosts
-                                 ssh -o "StrictHostKeyChecking=no" ec2-user@${SERVER_DEPLOYED} scp -o "StrictHostKeyChecking=no" /home/ec2-user/run_to_connect_node.sh ec2-user@${singleNode}:/home/ec2-user/run_to_connect_node.sh
-                                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
-                                ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
-                                 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ec2-user --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/configure-felix-configure-bgp.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-kubernetes-node-playbook.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/install-addons-kubernetes.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --user ${USER_AWS} --extra-vars "http_ansible_proxy=${HTTP_PROXY} cmd_to_run=${CMD_TO_RUN} kuburnetes_master=${PRIVATE_IP_DEPLOYED} workspace=${WORKSPACE} target=kuber_node_1" ${WORKSPACE}/playbooks/configure-felix-configure-bgp.yml
                                  echo "closing connection for this host"
-                                 ssh -o "StrictHostKeyChecking=no" ec2-user@${SERVER_DEPLOYED} rm /tmp/runningssh
+ssh -o "StrictHostKeyChecking=no" ${USER_AWS}@${SERVER_DEPLOYED} rm /tmp/runningssh
                                  errorCode=0; while [ $errorCode -eq 0 ];do  nc -z localhost 2222;errorCode=$?; sleep 2;done || :
 '''
                         }

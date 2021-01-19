@@ -150,15 +150,23 @@
         daemon_reload: yes
         name: containerd
 
+
+    - name: restore the manifests folder
+      copy:
+        src: {{ workspace }}/etc/kubernetes/run_to_connect_node.sh
+        dest: /etc/kubernetes/run_to_connect_node.sh
+        remote_src: yes
+        directory_mode: yes
+
     - name: change permissions for run_to_connect
       file:
-        path: /home/ec2-user/run_to_connect_node.sh
+        path: /etc/kubernetes/run_to_connect_node.sh
         state: touch
         mode: "u+rwx,g+rx,o+rx"
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  sh -c "sudo /home/ec2-user/run_to_connect_node.sh"
+        cmd:  sh -c "/etc/kubernetes/run_to_connect_node.sh"
         creates: /tmp/kinstalled
 
     - name: etc/rc.local

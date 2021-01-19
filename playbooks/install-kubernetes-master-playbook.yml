@@ -139,7 +139,7 @@
         state: restarted
     - name: Initialize the Kubernetes cluster using kubeadm
       command:
-        cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubeadm init --apiserver-advertise-address='{{ kuburnetes_master }}'  --node-name node-master --pod-network-cidr=192.168.0.0/16  --control-plane-endpoint="node-master:6443"     --ignore-preflight-errors=NumCPU | tail -n 2 | tee /home/ec2-user/run_to_connect_node.sh"
+        cmd:  sudo sh -c "KUBECONFIG=/etc/kubernetes/admin.conf kubeadm init --apiserver-advertise-address='{{ kuburnetes_master }}'  --node-name node-master --pod-network-cidr=192.168.0.0/16  --control-plane-endpoint="node-master:6443"     --ignore-preflight-errors=NumCPU | tail -n 2 | tee /etc/kubernetes/run_to_connect_node.sh"
         creates: /tmp/kinstalled
 
     - name: Importing Schema for Calico
