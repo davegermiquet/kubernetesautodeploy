@@ -21,7 +21,7 @@
           string(name: 'IP_PRIVATE_RANGE',defaultValue: '192.168.9.0/24',description: 'IP RANGE For Prviate Subnet')
           string(name: 'TYPE_EC2_INSTANCE',defaultValue: 't2.medium',description: 'EC2 Server Type')
           string(name: 'HARD_DISK_SIZE',defaultValue: '16',description: 'In Gigabytes')
-          string(name: 'RED_HAT_IMAGE_AMI',defaultValue: 'ami-000db10762d0c4c05',description: 'RedHat Deployment Image version 7')
+          string(name: 'RED_HAT_IMAGE_AMI',defaultValue: 'ami-096fda3c22c1c990a',description: 'RedHat Deployment Image version 7')
           string(name: 'NODE_AMOUNT',defaultValue: '2',description: 'Amount of Nodes Deployed')
        }
 
