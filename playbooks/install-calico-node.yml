@@ -268,12 +268,6 @@
                       periodSeconds: 10
 
                     volumeMounts:
-                      - mountPath: /var/run/bird
-                        name: runbird
-                        readOnly: false
-                      - mountPath: /etc/calico
-                        name: calico
-                        readOnly: false
                       - mountPath: /lib/modules
                         name: lib-modules
                         readOnly: true
@@ -288,13 +282,12 @@
                         readOnly: false
                       - mountPath: /var/run/nodeagent
                         name: policysync
-                        volumeMounts:
-                    - name: certs
-                      mountPath: "/etc/kubernetes/pki/"
-                      readOnly: true
-                    - name: adminconf
-                      mountPath: "/etc/kubernetes/admin.conf"
-                      readOnly: true
+                      - name: certs
+                        mountPath: "/etc/kubernetes/pki/"
+                        readOnly: true
+                      - name: adminconf
+                        mountPath: "/etc/kubernetes/admin.conf"
+                        readOnly: true
 
                 volumes:
                   - name: certs

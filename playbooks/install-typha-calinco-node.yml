@@ -168,18 +168,18 @@
                     - name: certs
                       mountPath: "/etc/kubernetes/pki/"
                       readOnly: true
+                  volumeMounts:
                     - name: adminconf
                       mountPath: "/etc/kubernetes/admin.conf"
                       readOnly: true
 
-                      name: ssl1
+                volumes:
                   - name: certs
                     configMap:
                       name: certs
-                  - name: certs
+                  - name: adminconf
                     configMap:
                       name: adminconf
-                      type: Directory
 
         dest: /tmp/deployaccount
         force: no
@@ -196,12 +196,12 @@
         owner: root
     - name: configure configmap
       command:
-        cmd: kubectl create configmap certs --from-file=/etc/kubernetes/pki/
+        cmd: kubectl create configmap certs --from-file=/etc/kubernetes/pki/  -n kube-system
         creates: /tmp/deployinstalled
 
     - name: configure configmap
       command:
-        cmd: kubectl create configmap adminconf --from-file=/etc/kubernetes/admin.conf
+        cmd: kubectl create configmap adminconf --from-file=/etc/kubernetes/admin.conf -n kube-system
 
         creates: /tmp/deployinstalled
 
