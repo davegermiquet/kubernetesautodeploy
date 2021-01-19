@@ -13,6 +13,7 @@
           spec:
             ipipEnabled: true
             routeSource: "CalicoIPAM"
+            logSeverityScreen: Info
             reportingInterval: 0s
         dest: /tmp/felixconfig
         force: no
