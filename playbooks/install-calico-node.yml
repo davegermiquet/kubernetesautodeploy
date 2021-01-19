@@ -119,7 +119,8 @@
         owner: root
         mode: 0555
 
-    - name: Deploy the typha
+
+    - name: Deploy the role for calico
       command:
         cmd:  kubectl apply -f /tmp/roleaccountcalico
         creates: /tmp/calico-usercreated
@@ -142,8 +143,6 @@
         group: root
         owner: root
         mode: 0555
-
-
 
     - name: create deploymnet
       copy:
@@ -289,22 +288,21 @@
                         readOnly: false
                       - mountPath: /var/run/nodeagent
                         name: policysync
-                      - mountPath: /etc/kubernetes
-                        name: ssl1
+                        volumeMounts:
+                    - name: certs
+                      mountPath: "/etc/kubernetes/pki/"
+                      readOnly: true
+                    - name: adminconf
+                      mountPath: "/etc/kubernetes/admin.conf"
+                      readOnly: true
+
                 volumes:
-                  - name: runbird
-                    hostPath:
-                      path: /var/run/bird
-                      type: DirectoryOrCreate
-                  - name: ssl1
-                    hostPath:
-                      path: /etc/kubernetes
-                      type: Directory
-                  - name: calico
-                    hostPath:
-                      path: /etc/calico
-                      type: DirectoryOrCreate
-                # Used by calico-node.
+                  - name: certs
+                    configMap:
+                      name: certs
+                  - name: certs
+                    configMap:
+                      name: adminconf
                   - name: lib-modules
                     hostPath:
                       path: /lib/modules

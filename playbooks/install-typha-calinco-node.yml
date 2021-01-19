@@ -99,7 +99,8 @@
             labels:
               k8s-app: calico-typha
           spec:
-            replicas: 2
+            replicas: 3
+            replicas: 3
             revisionHistoryLimit: 2
             selector:
               matchLabels:
@@ -164,13 +165,20 @@
                       port: 9098
                       host: localhost
                     periodSeconds: 10
-                  volumeMounts:
-                    - mountPath: /etc/kubernetes
+                    - name: certs
+                      mountPath: "/etc/kubernetes/pki/"
+                      readOnly: true
+                    - name: adminconf
+                      mountPath: "/etc/kubernetes/admin.conf"
+                      readOnly: true
+
                       name: ssl1
-                volumes:
-                  - name: ssl1
-                    hostPath:
-                      path: /etc/kubernetes
+                  - name: certs
+                    configMap:
+                      name: certs
+                  - name: certs
+                    configMap:
+                      name: adminconf
                       type: Directory
 
         dest: /tmp/deployaccount
@@ -186,7 +194,16 @@
         force: no
         group: root
         owner: root
-        mode: 0555
+    - name: configure configmap
+      command:
+        cmd: kubectl create configmap certs --from-file=/etc/kubernetes/pki/
+        creates: /tmp/deployinstalled
+
+    - name: configure configmap
+      command:
+        cmd: kubectl create configmap adminconf --from-file=/etc/kubernetes/admin.conf
+
+        creates: /tmp/deployinstalled
 
     - name: configure typha service account
       command:
