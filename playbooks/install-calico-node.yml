@@ -294,7 +294,7 @@
                 volumes:
                   - name: runbird
                     hostPath:
-                      path:/var/run/bird
+                      path: /var/run/bird
                       type: Directory
 
                   - name: ssl1
