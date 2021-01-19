@@ -161,7 +161,7 @@ sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vv  -i inventory_hosts --u
                       sh '''
 
                                  echo "Setup Bastion Hosts/Squid Server for Node"
-scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ${USER_AWS} @${SERVER_DEPLOYED}:/tmp/autoscript.sh
+scp -o "StrictHostKeyChecking=no" ${WORKSPACE}/scripts/autoscript.sh ${USER_AWS}@${SERVER_DEPLOYED}:/tmp/autoscript.sh
 scp -o "StrictHostKeyChecking=no" /var/jenkins_home/.ssh/id_rsa  ${USER_AWS}@${SERVER_DEPLOYED}:/home/${USER_AWS}/.ssh/id_rsa
 ssh -l ${USER_AWS} -o "StrictHostKeyChecking=no" ${SERVER_DEPLOYED} scp -o port=2222 -o StrictHostKeyChecking=no /var/jenkins_home/.ssh/id_rsa ${USER_AWS}@localhost:/home/${USER_AWS}/.ssh/id_rsa /tmp/runningssh
 ssh -f -o "ExitOnForwardFailure=yes" -L 2222:${singleNode}:22 ${USER_AWS}@${SERVER_DEPLOYED} /tmp/autoscript.sh &
