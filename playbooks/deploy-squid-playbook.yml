@@ -4,6 +4,11 @@
   become: true
 
   tasks:
+    - name: Add cents repo
+      yum_repository:
+        name: maincentos
+        description:  enabled centos due to repo issues
+        baseurl: http://mirror.centos.org/centos/7/extras/x86_64/
     - name: Install required system packages
       yum:
         name:
