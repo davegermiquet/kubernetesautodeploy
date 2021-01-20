@@ -164,11 +164,12 @@
                       path: /readiness
                       port: 9098
                       host: localhost
+                  volumeMounts:
                     periodSeconds: 10
                     - name: certs
                       mountPath: "/etc/kubernetes/pki/"
                       readOnly: true
-                  volumeMounts:
+
                     - name: adminconf
                       mountPath: "/etc/kubernetes/admin.conf"
                       readOnly: true
@@ -176,7 +177,7 @@
                 volumes:
                   - name: certs
                     configMap:
-                      name: certs
+                        name: certs
                   - name: adminconf
                     configMap:
                       name: adminconf
