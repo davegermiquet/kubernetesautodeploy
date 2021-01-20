@@ -293,7 +293,7 @@
                   - name: certs
                     configMap:
                       name: certs
-                  - name: certs
+                  - name: adminconf
                     configMap:
                       name: adminconf
                   - name: lib-modules
