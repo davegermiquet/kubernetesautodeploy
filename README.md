@@ -18,7 +18,7 @@ Server Requirements:
 
 It'll deploy the following:
 
-- Kubernetes Master (RHES7)
-- Kubernetes Node   (RHES7)
+- Kubernetes Master (Fedora34)
+- Kubernetes Node   (Fedora34)
 - Vagrant 
 - KVM 
