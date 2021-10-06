@@ -9,14 +9,16 @@
 | Typha | Main task: Increases scale by reducing each node’s impact on the datastore. Runs as a daemon between the datastore and instances of Felix. Installed by default, but not configured. Typha description, and Typha component.|
 | calicoctl | Main task: Command line interface to create, read, update, and delete Calico objects. calicoctl command line is available on any host with network access to the Calico datastore as either a binary or a container. Requires separate installation. calicoctl. |
 
-Severs Deployed:
+Server Requirements:
 
-- 2 EC2 Instances
-- Squid
+1 Server 
+- Digital Ocean Example:
+
+  David Germiquet / 8 GB Memory / 4 AMD vCPUs / 160 GB Disk / NYC1 - Fedora 34 x64
+
+It'll deploy the following:
+
 - Kubernetes Master (RHES7)
 - Kubernetes Node   (RHES7)
-- VPC Network With only specific ports open for kubernetes
-- A Private and Public Network
-- Node On Private Network no access to outside world except through squid
-- Master on public network
-- Calico Configured VXLAN (Will configure BGP option as well TODO)
+- Vagrant 
+- KVM 
