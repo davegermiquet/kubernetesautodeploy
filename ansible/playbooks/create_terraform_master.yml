@@ -1,0 +1,32 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+    BUCKET: "{{ lookup('env','BUCKET') }}"
+    AWS_FIRST_REGION: "{{ lookup('env','AWS_FIRST_REGION') }}"
+    AWS_SECOND_REGION: "{{ lookup('env','AWS_SECOND_REGION') }}"
+    DOMAIN: "{{ lookup('env','DOMAIN') }}"
+    VPC_RANGE: "{{ lookup('env','VPC_RANGE') }}"
+    IP_PUBILC_RANGE: "{{ lookup('env','IP_PUBILC_RANGE') }}"
+    IP_PRIVATE_RANGE: "{{ lookup('env','IP_PRIVATE_RANGE') }}"
+    TYPE_EC2_INSTANCE: "{{ lookup('env','TYPE_EC2_INSTANCE') }}"
+    HARD_DISK_SIZE: "{{ lookup('env','HARD_DISK_SIZE') }}"
+    RED_HAT_IMAGE_AMI: "{{ lookup('env','RED_HAT_IMAGE_AMI') }}"
+
+
+    NODE_AMOUNT: "{{ lookup('env','NODE_AMOUNT') }}"
+    WORKSPACE: "{{ lookup('env','WORKSPACE') }}"
+
+  tasks:
+
+  - debug: msg="Creating Terraform files on jenkins "
+
+  - name: create folders
+    file:
+      path: "{{ WORKSPACE }}/terraform_master/"
+      state: directory
+
+  - name: Creating from template master terraform to init
+    template:
+      src: "{{ WORKSPACE }}/templates/kubernetes_master.j2"
+      dest: "{{ WORKSPACE }}/terraform_master/kubernetes_master.tf"

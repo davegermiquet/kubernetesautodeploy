@@ -1,0 +1,24 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: "no"
+  become: true
+
+  tasks:
+    - name: Install required system packages
+      yum:
+        name:
+          - avahi
+          - python3-pip
+          - curl
+          - squid
+
+    - name: Explicitly specifying named matched groups
+      replace:
+        destfile: /etc/squid/squid.conf
+        regexp: "^http_access allow localhost$"
+        replace: http_access allow localnet
+
+    - name: Make sure a service is running
+      systemd:
+        state: restarted
+        name: squid

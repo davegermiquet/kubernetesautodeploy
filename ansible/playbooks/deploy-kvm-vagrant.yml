@@ -1,0 +1,97 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: "no"
+  become: true
+
+  tasks:
+    - name: Install the latest version of vagrant
+      dnf:
+        name: 
+          - bridge-utils 
+          - libvirt 
+          - virt-install 
+          - qemu-kvm
+          - libvirt-devel 
+          - virt-top 
+          - libguestfs-tools
+        state: present
+
+    - name: Install virt manager vagrant
+      dnf:
+        name: 
+          - virt-manager
+          - vagrant
+          - gcc 
+          - libvirt 
+          - libvirt-devel 
+          - libxml2-devel 
+          - make 
+          - ruby-devel
+        state: present
+
+    - name: initiliaze vagrant plugin
+      ansible.builtin.shell: vagrant plugin install vagrant-libvirt
+      
+    - name: initiliaze vagrant plugin
+      ansible.builtin.shell: vagrant plugin install vagrant-mutate
+
+    - name: fix config to root user
+      ansible.builtin.replace:
+        path: /etc/libvirt/qemu.conf
+        regexp: '\#user = "root"'
+        replace: 'user = "root"'
+
+    - name: Fix Config to root user
+      ansible.builtin.replace:
+        path: /etc/libvirt/qemu.conf
+        regexp: '\#group = "root"'
+        replace: 'group = "root"'
+
+    - name: start virtual system
+      ansible.builtin.systemd:
+        state: restarted
+        enabled: true
+        name: libvirtd
+
+
+    - name: Create root folder for Kubernetes main vagrant
+      ansible.builtin.file:
+        path: /vagrant
+        state: directory
+        mode: '0755'
+
+    
+    - name: Create master kubernetes node for vagrant folder
+      ansible.builtin.file:
+        path: /vagrant/master
+        state: directory
+        mode: '0755'
+
+    - name: Create node kubernetes for vagrant folder
+      ansible.builtin.file:
+        path: /vagrant/node
+        state: directory
+        mode: '0755'
+
+    - name: Copy over Vagrant Files for master kubernetes
+      ansible.builtin.template:
+        src: Vagrantfile_master.j2
+        dest: /vagrant/master/Vagrantfile
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: copy over vagrant files for node kubernetes
+      ansible.builtin.template:
+        src: Vagrantfile_node.j2
+        dest: /vagrant/node/Vagrantfile
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: start it up master
+      ansible.builtin.shell: cd /vagrant/master && vagrant destroy --force ; vagrant up && vagrant ssh -c  "sudo yum -y install ansible"
+
+
+    - name: istart it up node
+      ansible.builtin.shell: cd /vagrant/node && vagrant destory --force ;vagrant up && vagrant ssh -c  "sudo yum -y install ansible"

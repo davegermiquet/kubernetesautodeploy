@@ -1,0 +1,64 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: "no"
+  become: true
+
+  tasks:
+    - name: Creates SSL certficates process
+      command:
+        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/cni.key -nodes -out /etc/kubernetes/pki/cni.csr -subj "/CN=calico-cni"
+        creates: /tmp/sslcreated
+
+    - name: Creates SSL certficates process
+      command:
+        cmd: openssl x509 -req -in /etc/kubernetes/pki/cni.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/cni.crt -days 365
+        creates: /tmp/sslcreated
+
+    - name: Creates SSL certficates process
+      command:
+        cmd: openssl req -x509 -newkey rsa:4096 -keyout /etc/kubernetes/pki/typhaca.key -nodes -out /etc/kubernetes/pki/typhaca.crt -subj "/CN=Calico Typha CA" -days 365
+        creates: /tmp/sslcreated
+
+    - name: Creates SSL certficates process
+      command:
+        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/typha.key -nodes -out /etc/kubernetes/pki/typha.csr -subj "/CN=calico-typha"
+        creates: /tmp/sslcreated
+
+    - name: Configure typha ssl
+      command:
+        cmd: openssl x509 -req -in /etc/kubernetes/pki/typha.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/kubernetes/pki/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/typha.crt -days 365
+        creates: /tmp/sslcreated
+
+    - name: Configure calico node
+      command:
+        cmd: openssl req -newkey rsa:4096 -keyout /etc/kubernetes/pki/calico-node.key -nodes -out /etc/kubernetes/pki/calico-node.csr -subj "/CN=calico-node"
+        creates: /tmp/sslcreated
+
+    - name: Configure calico node
+      command:
+        cmd: openssl x509 -req -in /etc/kubernetes/pki/calico-node.csr -CA /etc/kubernetes/pki/typhaca.crt -CAkey /etc/kubernetes/pki/typhaca.key -CAcreateserial -out /etc/kubernetes/pki/calico-node.crt -days 365
+        creates: /tmp/sslcreated
+
+    - name: copy kubernetes admin
+      synchronize:
+        mode: pull
+        src: "/etc/kubernetes/"
+        dest: "{{ workspace }}/etc/kubernetes/"
+        checksum: yes
+        recursive: yes
+
+    - name: save state file
+      copy:
+        content: ""
+        dest: /tmp/sslcreated
+        force: no
+        group: root
+        owner: root
+        mode: 0555
+
+    - name: master synchronize for nodes
+      synchronize:
+        mode: pull
+        src: "/etc/kubernetes/"
+        dest: "{{ workspace }}/etc/kubernetes/"
+        recursive: yes
