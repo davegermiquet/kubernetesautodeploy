@@ -14,6 +14,7 @@
           - libvirt-devel 
           - virt-top 
           - libguestfs-tools
+
         state: present
 
     - name: Install virt manager vagrant
@@ -30,68 +31,90 @@
         state: present
 
     - name: initiliaze vagrant plugin
-      ansible.builtin.shell: vagrant plugin install vagrant-libvirt
+      shell: vagrant plugin install vagrant-libvirt
       
-    - name: initiliaze vagrant plugin
-      ansible.builtin.shell: vagrant plugin install vagrant-mutate
+    - name: initiliaze vagrant plugin mutate
+      shell: vagrant plugin install vagrant-mutate
+
+    - name: initiliaze vagrant plugin scp for copying for public key
+      shell: vagrant plugin install vagrant-scp
 
     - name: fix config to root user
-      ansible.builtin.replace:
+      replace:
         path: /etc/libvirt/qemu.conf
         regexp: '\#user = "root"'
         replace: 'user = "root"'
 
     - name: Fix Config to root user
-      ansible.builtin.replace:
+      replace:
         path: /etc/libvirt/qemu.conf
         regexp: '\#group = "root"'
         replace: 'group = "root"'
 
     - name: start virtual system
-      ansible.builtin.systemd:
+      systemd:
         state: restarted
         enabled: true
         name: libvirtd
 
 
     - name: Create root folder for Kubernetes main vagrant
-      ansible.builtin.file:
-        path: /vagrant
+      file:
+        path: /home/vagrant
         state: directory
         mode: '0755'
 
-    
+
     - name: Create master kubernetes node for vagrant folder
-      ansible.builtin.file:
-        path: /vagrant/master
+      file:
+        path: /home/vagrant/master
         state: directory
         mode: '0755'
 
     - name: Create node kubernetes for vagrant folder
-      ansible.builtin.file:
-        path: /vagrant/node
+      file:
+        path: /home/vagrant/node
         state: directory
         mode: '0755'
 
     - name: Copy over Vagrant Files for master kubernetes
-      ansible.builtin.template:
+      template:
         src: Vagrantfile_master.j2
-        dest: /vagrant/master/Vagrantfile
+        dest: /home/vagrant/master/Vagrantfile
         owner: root
         group: root
         mode: '0644'
 
     - name: copy over vagrant files for node kubernetes
-      ansible.builtin.template:
+      template:
         src: Vagrantfile_node.j2
-        dest: /vagrant/node/Vagrantfile
+        dest: /home/vagrant/node/Vagrantfile
         owner: root
         group: root
         mode: '0644'
 
     - name: start it up master
-      ansible.builtin.shell: cd /vagrant/master && vagrant destroy --force ; vagrant up && vagrant ssh -c  "sudo yum -y install ansible"
+      shell: cd /home/vagrant/master && vagrant destroy --force ; vagrant up && vagrant ssh -c  "sudo yum -y install ansible"
+
+    - name: start it up node
+      shell: cd /home/vagrant/node && vagrant destory --force ;vagrant up && vagrant ssh -c  "sudo yum -y install ansible"
+
+    - name: copy pub key over for calling ansible on host for master
+      shell: cd /home/vagrant/master && vagrant scp /home/vagrant/.ssh/id_rsa.pub /home/vagrant/
+
+    - name: copy pub key over for calling ansible on host for node
+      shell: cd /home/vagrant/node && vagrant scp /home/vagrant/.ssh/id_rsa.pub /home/vagrant/
+
+    - name: add key to public ssh for master
+      shell: cd /home/vagrant/master && vagrant ssh -c "cat /home/vagrant/id_rsa.pub /home/vagrant/.ssh/authorized_keys > /home/vagrant/.ssh/authorized_keys2 && cp /home/vagrant/.ssh/authorized_keys2 /home/vagrant/.ssh/authorized_keys"
+
+    - name: add key to public ssh for node
+      shell: cd /home/vagrant/node && vagrant ssh -c "cat /home/vagrant/id_rsa.pub /home/vagrant/.ssh/authorized_keys > /home/vagrant/.ssh/authorized_keys2 && cp /home/vagrant/.ssh/authorized_keys2 /home/vagrant/.ssh/authorized_keys"
 
 
-    - name: istart it up node
-      ansible.builtin.shell: cd /vagrant/node && vagrant destory --force ;vagrant up && vagrant ssh -c  "sudo yum -y install ansible"
+
+
+
+
+
+

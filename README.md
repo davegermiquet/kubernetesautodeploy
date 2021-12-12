@@ -23,4 +23,8 @@ It'll deploy the following:
 - Vagrant 
 - KVM 
 
+Make sure you have a ssh public key on the target system your calling ansible on
 
+Edit the ansible/inventory_file and enter the host you want to install vagrant on.
+Run the command 
+ansible-playbook -i ansible/inventory_file  ansible/playbooks/deploy-kvm-vagrant.yml --extra-vars "target=vagrant"
