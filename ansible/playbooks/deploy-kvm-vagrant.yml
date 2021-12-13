@@ -4,7 +4,7 @@
   become: true
 
   tasks:
-    - name: Install the latest version of vagrant
+    - name: Install the latest version of vagrant and ansible
       dnf:
         name: 
           - bridge-utils 
@@ -14,6 +14,7 @@
           - libvirt-devel 
           - virt-top 
           - libguestfs-tools
+          - ansible
 
         state: present
 
@@ -99,8 +100,8 @@
     - name: start it up node
       shell: cd /home/vagrant/node && vagrant destory --force ;vagrant up && vagrant ssh -c  "sudo yum -y install ansible"
 
-    - name: copy pub key over for calling ansible on host for master
-      shell: cd /home/vagrant/master && vagrant scp /home/vagrant/.ssh/id_rsa.pub /home/vagrant/
+    - name: copy pub key over for calling ansible on host for master 
+      shell: cd /home/vagrant/master && sudo vagrant scp /home/vagrant/.ssh/id_rsa.pub /home/vagrant/
 
     - name: copy pub key over for calling ansible on host for node
       shell: cd /home/vagrant/node && vagrant scp /home/vagrant/.ssh/id_rsa.pub /home/vagrant/
