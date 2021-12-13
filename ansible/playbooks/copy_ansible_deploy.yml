@@ -1,0 +1,30 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: "no"
+
+  tasks:
+    - name: Create ansible folder for Kubernetes main vagrant
+      file:
+        path: /home/vagrant/ansible/
+        state: directory
+        mode: '0755'
+
+    - name: copy inventory file
+      copy:
+        src: inventory
+        dest: /home/vagrant/ansible/
+
+    - name: Create playbooks folder for Kubernetes main vagrant
+      file:
+        path: /home/vagrant/ansible/playbooks
+        state: directory
+        mode: '0755'
+
+    - name: copy master playbook
+      copy:
+        src: remote-playbooks/master_ansible/install-kubernetes-master-playbook.yml
+        dest: /home/vagrant/ansible/playbooks
+
+    - name: run ansible
+      shell: ansible-playbook -i ansible/inventory  ansible/playbooks/install-kubernetes-master-playbook.yml --extra-vars "target=master"
+
